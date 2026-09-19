@@ -1,0 +1,33 @@
+# Credenciales
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Datos procesados
+data/processed/*
+!data/processed/.gitkeep
+
+# Modelos y archivos pesados
+models/
+*.bin
+*.pt
+*.pth
+
+# IDE y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+
