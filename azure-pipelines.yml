@@ -1,0 +1,86 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+ 
+# =============================================================================
+# Despliegue Continuo (CI/CD) — EAN Graph Academy
+# Proyecto: PROYECTOS INTELIGENCIA ARTIFICIAL
+# Servidor: GCP VM (vm-daia-qa)
+# =============================================================================
+ 
+trigger:
+  branches:
+    include:
+      - main
+ 
+stages:
+  - stage: Deploy
+    displayName: 'Despliegue a GCP QA'
+    jobs:
+      - deployment: DeployJob
+        displayName: 'Desplegar Ean Graph Academy'
+        environment:
+          name: 'vm-daia-qa-ia'    # Si en Azure DevOps nombraste el entorno como 'vm-daia-qa', cámbialo aquí
+          resourceType: 'VirtualMachine'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  clean: true
+ 
+                - script: |
+                    set -e
+                    echo "=========================================="
+                    echo "🚀 Iniciando despliegue de Ean Graph Academy"
+                    echo "Rama: $(Build.SourceBranchName)"
+                    echo "Commit: $(Build.SourceVersion)"
+                    echo "Fecha: $(date)"
+                    echo "=========================================="
+ 
+                    APP_DIR="/home/anrojas/apps/grafos"
+ 
+                    # 1. Validar que la carpeta de la app exista en la VM
+                    if [ ! -d "$APP_DIR" ]; then
+                      echo "❌ ERROR: No existe el directorio $APP_DIR en el servidor."
+                      echo "Crea el directorio con: mkdir -p $APP_DIR"
+                      exit 1
+                    fi
+ 
+                    # 2. Sincronizar archivos del repositorio preservando el .env del servidor
+                    echo "📂 Sincronizando código hacia $APP_DIR..."
+                    if command -v rsync >/dev/null 2>&1; then
+                      rsync -av --exclude='.env' --exclude='.git' $(Build.SourcesDirectory)/ "$APP_DIR/"
+                    else
+                      cp -a $(Build.SourcesDirectory)/. "$APP_DIR/"
+                    fi
+ 
+                    cd "$APP_DIR"
+ 
+                    # 3. Validar que el archivo .env exista
+                    if [ ! -f .env ]; then
+                      echo "❌ ERROR: No se encontró el archivo .env en $APP_DIR"
+                      echo "Asegúrate de crear el archivo .env antes de ejecutar el pipeline."
+                      exit 1
+                    fi
+ 
+                    # 4. Detectar comando docker compose
+                    if docker compose version >/dev/null 2>&1; then
+                      COMPOSE="docker compose"
+                    else
+                      COMPOSE="docker-compose"
+                    fi
+ 
+                    # 5. Reconstruir imágenes y levantar servicios aislados (-p grafos)
+                    echo "🐳 Construyendo imágenes y levantando servicios..."
+                    $COMPOSE -p grafos up -d --build
+ 
+                    # 6. Limpieza de capas huérfanas intermedias
+                    echo "🧹 Limpiando imágenes y capas intermedias huérfanas..."
+                    docker image prune -f
+ 
+                    # 7. Verificación del estado de los contenedores
+                    echo "=========================================="
+                    echo "✅ Estado final de los contenedores de Grafos:"
+                    docker ps --filter "name=grafos"
+                    echo "=========================================="
+                    echo "🎉 ¡Despliegue completado con éxito!"
+                  displayName: 'Actualizar código, compilar y desplegar'
