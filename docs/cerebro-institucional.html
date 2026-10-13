@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cerebro Institucional</title>
+<script>
+  /* Tema: sigue al sistema por defecto (se aplica antes de pintar para evitar parpadeo) */
+  (function () {
+    var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   1. TOKENS — tema claro (por defecto)
+   ========================================================= */
+:root {
+  /* Marca */
+  --navy: #284786;
+  --azul: #005E85;
+  --teal: #009579;
+  --turquesa: #00C0B3;
+  --verde: #3BAC52;
+  --grad-v: linear-gradient(180deg, #284786 0%, #005E85 52%, #009579 100%);
+  --grad-hero: linear-gradient(112deg, #284786 0%, #005E85 52%, #009579 100%);
+  --grad-bar: linear-gradient(90deg, #284786 0%, #005E85 50%, #009579 100%);
+
+  /* Colores de marca usados como texto (AA) */
+  --turquesa-text: #00766A;
+  --teal-text: #007A63;
+  --verde-pill: #267A38;
+  --accent: #005E85;          /* links y acentos */
+  --kicker: #005E85;
+
+  /* Superficies y tinta — blanco premium + negro */
+  --bg: #FFFFFF;
+  --side-bg: #FAFBFD;
+  --surface: #FFFFFF;
+  --surface-2: #F5F7FA;
+  --surface-3: #ECF0F5;
+  --hover: rgba(40, 71, 134, .06);
+  --hair: rgba(40, 71, 134, .09);
+  --ink: #0A0F1A;
+  --ink-2: #2B3445;
+  --muted: #5A6477;
+  --btn-bg: #0A0F1A;
+  --btn-ink: #FFFFFF;
+  --focus: #005E85;
+  --scrim: rgba(255, 255, 255, .82);
+
+  /* Sombras azuladas, sin bordes duros */
+  --shadow-sm: 0 1px 2px rgba(40, 71, 134, .06), 0 4px 14px rgba(40, 71, 134, .05);
+  --shadow: 0 8px 24px rgba(40, 71, 134, .08);
+  --shadow-lg: 0 18px 48px rgba(40, 71, 134, .14);
+
+  /* Estados (semáforo) */
+  --ok: #3BAC52;   --ok-text: #1F6B30;   --ok-bg: #EAF6ED;   --ok-line: #BFE3C7;
+  --warn: #E0A100; --warn-text: #8A5200; --warn-bg: #FFF5E1; --warn-line: #F2D59B;
+  --bad: #D64545;  --bad-text: #A3262C;  --bad-bg: #FDEDED;  --bad-line: #F3BDBF;
+
+  /* Tipografía */
+  --f-title: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Forma */
+  --r-card: 19px;
+  --r-hero: 24px;
+  --r-tile: 13px;
+  --r-btn: 10px;
+  --r-pill: 999px;
+
+  /* Layout */
+  --side-w: 272px;
+  --top-h: 64px;
+  --pad: 32px;
+}
+
+/* =========================================================
+   1b. TOKENS — tema oscuro
+   ========================================================= */
+html[data-theme="dark"] {
+  --turquesa-text: #00C0B3;
+  --teal-text: #2FCFA8;
+  --accent: #4FC3E8;
+  --kicker: #4FC3E8;
+
+  --bg: #090D14;
+  --side-bg: #0C111A;
+  --surface: #111824;
+  --surface-2: #161E2C;
+  --surface-3: #1F2A3C;
+  --hover: rgba(79, 195, 232, .08);
+  --hair: rgba(255, 255, 255, .07);
+  --ink: #F2F5F9;
+  --ink-2: #CDD5E1;
+  --muted: #98A3B6;
+  --btn-bg: #F2F5F9;
+  --btn-ink: #0A0F1A;
+  --focus: #4FC3E8;
+  --scrim: rgba(9, 13, 20, .82);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .22);
+  --shadow: 0 8px 24px rgba(0, 0, 0, .34);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, .45);
+
+  --ok: #4CC466;   --ok-text: #86E09E;   --ok-bg: rgba(59, 172, 82, .14);   --ok-line: rgba(59, 172, 82, .38);
+  --warn: #F2B53A; --warn-text: #F6C96A; --warn-bg: rgba(242, 181, 58, .13); --warn-line: rgba(242, 181, 58, .36);
+  --bad: #F06A6A;  --bad-text: #FFA3A5;  --bad-bg: rgba(240, 106, 106, .13); --bad-line: rgba(240, 106, 106, .38);
+  color-scheme: dark;
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .25s ease, color .25s ease;
+}
+h1, h2, h3, h4 {
+  font-family: var(--f-title);
+  letter-spacing: -0.04em;
+  text-transform: none;
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.15;
+}
+h1 { font-weight: 800; }
+h2 { font-weight: 800; font-size: 28px; }
+h3 { font-weight: 700; font-size: 16.5px; }
+p { margin: 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+svg { flex: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.kicker {
+  display: block;
+  font: 600 11px/1.3 var(--f-body);
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: var(--kicker);
+}
+.muted { color: var(--muted); }
+.ellipsis { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Bloque de título dentro de filas flex: nunca se monta */
+.tblock { flex: 1 1 0; min-width: 0; overflow: hidden; }
+.tblock > * { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ico { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ico-sm { width: 16px; height: 16px; }
+
+/* =========================================================
+   3. COMPONENTES
+   ========================================================= */
+/* Botones */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 16px; border-radius: var(--r-btn);
+  font: 600 14px/1 var(--f-body); white-space: nowrap;
+  transition: transform .15s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--btn-bg); color: var(--btn-ink); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { box-shadow: var(--shadow); }
+.btn-ghost { background: var(--surface-2); color: var(--ink); }
+.btn-ghost:hover { background: var(--surface-3); }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: var(--r-btn);
+  display: inline-grid; place-items: center; color: var(--ink-2);
+  transition: background-color .2s ease, color .2s ease;
+}
+.icon-btn:hover { background: var(--hover); color: var(--ink); }
+.icon-btn.sm { width: 32px; height: 32px; }
+
+/* Tarjetas */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow), inset 0 0 0 1px var(--hair);
+  padding: 22px;
+  container-type: inline-size;
+  min-width: 0;
+}
+.tile {
+  background: var(--surface);
+  border-radius: var(--r-tile);
+  box-shadow: var(--shadow), inset 0 0 0 1px var(--hair);
+  padding: 16px 18px;
+  min-width: 0;
+  container-type: inline-size;
+}
+.tile .val { font: 800 26px/1.1 var(--f-title); letter-spacing: -0.04em; margin-top: 6px; }
+.tile .lab { font-size: 13px; color: var(--muted); }
+
+/* Chip de estado (punto + texto, nunca solo color) */
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 4px 10px 4px 9px; border-radius: var(--r-pill);
+  font: 600 12px/1.2 var(--f-body); white-space: nowrap;
+}
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.chip.ok   { color: var(--ok-text);   background: var(--ok-bg);   box-shadow: inset 0 0 0 1px var(--ok-line); }
+.chip.warn { color: var(--warn-text); background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.chip.bad  { color: var(--bad-text);  background: var(--bad-bg);  box-shadow: inset 0 0 0 1px var(--bad-line); }
+.chip.ok::before   { background: var(--ok); }
+.chip.warn::before { background: var(--warn); }
+.chip.bad::before  { background: var(--bad); }
+
+/* Pills de categoría (fondo AA + texto blanco, válidos en ambos temas) */
+.pill {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 9px;
+  border-radius: var(--r-pill); color: #fff; white-space: nowrap;
+  font: 600 11.5px/1 var(--f-body); letter-spacing: .01em;
+}
+.pill.academico     { background: var(--navy); }
+.pill.financiero,
+.pill.administrativo{ background: var(--azul); }
+.pill.investigacion { background: #007A63; }
+.pill.bienestar     { background: var(--verde-pill); }
+.pill.normativo,
+.pill.productividad { background: #00766A; }
+.pill.neutral { background: var(--surface-3); color: var(--ink-2); }
+
+/* Progreso con degradado de marca */
+.progress { height: 6px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+.progress > span { display: block; height: 100%; border-radius: inherit; background: var(--grad-bar); }
+
+/* Pestañas: hacen wrap, sin scroll horizontal */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px; border-radius: 13px; background: var(--surface-2); width: fit-content; max-width: 100%; }
+.tab {
+  height: 34px; padding: 0 14px; border-radius: var(--r-btn);
+  font: 600 13.5px/1 var(--f-body); color: var(--muted);
+  transition: background-color .2s ease, color .2s ease;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+/* Logo (placeholder minimalista blanco/negro — reemplazar por logo oficial) */
+.brand { display: flex; align-items: center; gap: 11px; min-width: 0; color: var(--ink); text-decoration: none; }
+.brand:hover { text-decoration: none; }
+.brand-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--ink); color: var(--bg); display: grid; place-items: center; flex: none; }
+.brand-mark svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.brand-word { min-width: 0; }
+.brand-word b { display: block; font: 800 18px/1 var(--f-title); letter-spacing: -0.04em; }
+.brand-word small { display: block; margin-top: 4px; font: 600 10.5px/1 var(--f-body); letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+
+/* =========================================================
+   4. LAYOUT BASE — sidebar + barra superior
+   ========================================================= */
+.app { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); min-height: 100vh; min-height: 100dvh; }
+
+.side {
+  position: sticky; top: 0; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column; gap: 18px;
+  padding: 20px 16px 16px;
+  background: var(--side-bg);
+  z-index: 20;
+}
+/* Firma de marca: filo con el degradado vertical navy → azul → teal */
+.side::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 3px; background: var(--grad-v); }
+.side-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px; }
+.new-chat { width: 100%; justify-content: flex-start; }
+.new-chat .kbd { margin-left: auto; font: 500 11.5px/1 var(--f-body); opacity: .65; }
+
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav a {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  height: 42px; padding: 0 12px; border-radius: var(--r-btn);
+  color: var(--ink-2); font: 500 14.5px/1 var(--f-body); text-decoration: none;
+  transition: background-color .2s ease, color .2s ease;
+}
+.nav a:hover { background: var(--hover); color: var(--ink); }
+.nav a[aria-current="page"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow-sm); }
+.nav a[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--grad-v); }
+.nav .lbl { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.recent { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px; scrollbar-width: thin; }
+.recent h4 { font: 600 11px/1 var(--f-body); letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin: 14px 10px 6px; }
+.recent a {
+  display: block; padding: 8px 10px; border-radius: var(--r-btn);
+  color: var(--ink-2); font-size: 14px; text-decoration: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.recent a:hover { background: var(--hover); color: var(--ink); }
+.recent a.on { background: var(--surface-3); color: var(--ink); }
+
+.me { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 13px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--grad-hero); color: #fff; font: 700 13px/1 var(--f-title); flex: none; }
+.me .tblock b { font-size: 14px; font-weight: 600; }
+.me .tblock small { font-size: 12.5px; color: var(--muted); }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: 15;
+  height: var(--top-h); display: flex; align-items: center; gap: 10px;
+  padding: 0 var(--pad);
+  background: var(--scrim);
+  -webkit-backdrop-filter: saturate(160%) blur(14px); backdrop-filter: saturate(160%) blur(14px);
+  box-shadow: 0 1px 0 var(--hair);
+}
+.topbar h1 { font-size: 20px; line-height: 1.2; }
+.topbar .kicker { margin-bottom: 3px; }
+.model {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px;
+  border-radius: var(--r-btn); background: var(--surface-2); font: 600 13px/1 var(--f-body); color: var(--ink);
+  white-space: nowrap;
+}
+.model .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--grad-hero); }
+.top-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+
+.view { display: none; padding: 28px var(--pad) 40px; width: 100%; max-width: 1240px; margin: 0 auto; }
+.view.on { display: block; animation: fade .3s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.page-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.page-head .tblock h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) { .page-head .tblock > *, .page-head .tblock h2 { white-space: normal; overflow: visible; } }
+.page-head .tblock .kicker { margin-bottom: 8px; }
+.page-head .tblock p { margin-top: 8px; color: var(--muted); white-space: normal; }
+
+/* =========================================================
+   5. PANTALLA: ASISTENTE (estado vacío)
+   ========================================================= */
+.hello { max-width: 780px; margin: 0 auto; min-height: calc(100dvh - var(--top-h) - 80px); display: flex; flex-direction: column; justify-content: center; gap: 26px; padding: 12px 0 24px; }
+.hello-head { text-align: center; }
+.orb { width: 60px; height: 60px; margin: 0 auto 20px; border-radius: 19px; background: var(--ink); color: var(--bg); display: grid; place-items: center; box-shadow: var(--shadow-lg); position: relative; }
+.orb::after { content: ""; position: absolute; inset: -6px; border-radius: 24px; background: var(--grad-hero); z-index: -1; opacity: .22; filter: blur(10px); }
+.orb svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.hello-head .kicker { margin-bottom: 10px; }
+.hello h2 { font-size: clamp(30px, 4.4vw, 44px); }
+.hello-head p { margin-top: 10px; color: var(--muted); font-size: 16px; }
+
+.composer {
+  background: var(--surface); border-radius: var(--r-card);
+  box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--hair);
+  padding: 14px 14px 10px; container-type: inline-size;
+  transition: box-shadow .2s ease;
+}
+.composer:focus-within { box-shadow: var(--shadow-lg), inset 0 0 0 1.5px var(--focus); }
+.composer textarea {
+  display: block; width: 100%; min-height: 54px; max-height: 200px; resize: none;
+  border: 0; outline: 0; background: transparent; color: var(--ink);
+  font: 400 16px/1.5 var(--f-body); padding: 4px 6px;
+}
+.composer textarea::placeholder { color: var(--muted); }
+.composer-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.src-toggle {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px;
+  border-radius: var(--r-btn); font: 500 13px/1 var(--f-body); color: var(--ink-2); background: var(--surface-2);
+}
+.src-toggle[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.send { margin-left: auto; width: 40px; height: 40px; border-radius: var(--r-btn); background: var(--btn-bg); color: var(--btn-ink); display: grid; place-items: center; box-shadow: var(--shadow-sm); }
+.send:disabled { opacity: .35; cursor: default; }
+.agent-tag { display: none; align-items: center; gap: 8px; margin: 0 0 8px 4px; font: 600 12.5px/1 var(--f-body); color: var(--ink-2); }
+.agent-tag.on { display: inline-flex; }
+.agent-tag button { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); }
+.agent-tag button:hover { background: var(--hover); }
+.composer-note { text-align: center; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+@container (max-width: 460px) {
+  .src-toggle .lbl { display: none; }
+  .src-toggle { padding: 0 9px; }
+}
+
+.suggest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; container-type: inline-size; }
+.sug {
+  text-align: left; display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 16px; border-radius: var(--r-tile);
+  background: var(--surface-2); color: var(--ink);
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.sug:hover { background: var(--surface); box-shadow: var(--shadow); transform: translateY(-1px); }
+.sug .ico { color: var(--accent); margin-top: 2px; }
+.sug b { display: block; font-weight: 600; font-size: 14.5px; }
+.sug span { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.sources-line { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+
+/* =========================================================
+   6. PANTALLA: CONVERSACIÓN
+   ========================================================= */
+.chat-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 32px; align-items: start; }
+.thread { max-width: 760px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; padding-bottom: 8px; }
+.msg-u { align-self: flex-end; max-width: min(560px, 88%); background: var(--surface-2); padding: 12px 16px; border-radius: 19px 19px 6px 19px; font-size: 15.5px; }
+.msg-a { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 14px; }
+.msg-a .mini { width: 32px; height: 32px; border-radius: 10px; background: var(--ink); color: var(--bg); display: grid; place-items: center; }
+.msg-a .mini svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.answer { min-width: 0; font-size: 15.5px; line-height: 1.65; color: var(--ink-2); }
+.answer > * + * { margin-top: 14px; }
+.answer strong { color: var(--ink); font-weight: 600; }
+.answer-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.answer-meta .who { font: 700 14px/1 var(--f-title); letter-spacing: -0.02em; color: var(--ink); }
+.cite { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin: 0 1px; border-radius: 6px; background: var(--surface-3); color: var(--accent); font: 700 11px/1 var(--f-body); vertical-align: 2px; }
+.kv { border-radius: var(--r-tile); background: var(--surface-2); padding: 4px 16px; container-type: inline-size; }
+.kv-row { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; padding: 11px 0; box-shadow: 0 1px 0 var(--hair); }
+.kv-row:last-child { box-shadow: none; }
+.kv-row .k { flex: 1 1 220px; min-width: 0; color: var(--ink); font-weight: 500; }
+.kv-row .v { flex: 0 1 auto; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--r-tile); background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); color: var(--ink-2); }
+.callout .ico { color: var(--warn-text); margin-top: 2px; }
+.cards-src { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; container-type: inline-size; }
+.src-mini { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: var(--r-tile); background: var(--surface); box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--hair); color: var(--ink); text-decoration: none; min-width: 0; }
+.src-mini:hover { text-decoration: none; box-shadow: var(--shadow), inset 0 0 0 1px var(--hair); }
+.src-mini .n { width: 22px; height: 22px; border-radius: 7px; background: var(--surface-3); color: var(--accent); display: grid; place-items: center; font: 700 11px/1 var(--f-body); flex: none; }
+.src-mini .tblock b { font-size: 13px; font-weight: 600; }
+.src-mini .tblock small { font-size: 12px; color: var(--muted); }
+@container (max-width: 560px) { .cards-src { grid-template-columns: minmax(0, 1fr); } }
+.actions { display: flex; gap: 2px; flex-wrap: wrap; margin-left: -8px; }
+.follow { display: flex; gap: 8px; flex-wrap: wrap; }
+.follow button { height: 34px; padding: 0 13px; border-radius: var(--r-btn); background: var(--surface-2); font: 500 13.5px/1 var(--f-body); color: var(--ink); }
+.follow button:hover { background: var(--surface-3); }
+.typing { display: inline-flex; gap: 5px; padding: 8px 0; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite ease-in-out; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+.dock { position: sticky; bottom: 0; padding: 18px 0 18px; background: linear-gradient(to top, var(--bg) 72%, transparent); z-index: 5; }
+.dock .composer { max-width: 760px; margin: 0 auto; }
+
+.chat-aside { position: sticky; top: calc(var(--top-h) + 20px); display: flex; flex-direction: column; gap: 14px; }
+.chat-aside .card { padding: 18px; }
+.aside-src { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.aside-item { display: flex; flex-direction: column; gap: 8px; }
+.aside-item .row { display: flex; align-items: center; gap: 10px; }
+.aside-item .tblock b { font-size: 13.5px; font-weight: 600; }
+.aside-item .tblock small { font-size: 12px; color: var(--muted); }
+.aside-item .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.confidence { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.confidence .val { white-space: nowrap; font: 800 30px/1 var(--f-title); letter-spacing: -0.04em; }
+
+/* =========================================================
+   7. PANTALLA: BASE DE CONOCIMIENTO
+   ========================================================= */
+.tiles-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.search { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: var(--r-btn); background: var(--surface-2); color: var(--muted); flex: 1 1 240px; min-width: 0; max-width: 360px; margin-left: auto; }
+.search input { border: 0; outline: 0; background: transparent; color: var(--ink); font: 400 14px var(--f-body); width: 100%; min-width: 0; }
+.search input::placeholder { color: var(--muted); }
+.grid-src { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.src-card { display: flex; flex-direction: column; gap: 14px; }
+.src-head { display: flex; align-items: flex-start; gap: 12px; }
+.ic-tile { width: 42px; height: 42px; border-radius: var(--r-tile); background: var(--surface-2); color: var(--ink); display: grid; place-items: center; flex: none; }
+.src-head .tblock b { font: 700 15.5px/1.3 var(--f-title); letter-spacing: -0.03em; color: var(--ink); }
+.src-head .tblock small { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.src-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.prog-head { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); margin-bottom: 7px; }
+.prog-head b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.src-foot { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); padding-top: 12px; box-shadow: 0 -1px 0 var(--hair); }
+.src-foot span { display: inline-flex; align-items: center; gap: 6px; }
+.src-note { font-size: 13px; color: var(--ink-2); }
+@container (max-width: 340px) {
+  .src-head { flex-wrap: wrap; }
+  .src-head .chip { order: 3; }
+}
+
+/* =========================================================
+   8. PANTALLA: PANEL (héroe + métricas)
+   ========================================================= */
+.hero {
+  position: relative; overflow: hidden;
+  border-radius: var(--r-hero); color: #fff;
+  /* velo hacia el extremo teal para garantizar AA del texto blanco */
+  background: linear-gradient(112deg, rgba(5,20,30,0) 35%, rgba(5,20,30,.3) 100%), var(--grad-hero);
+  padding: 34px 36px 96px;
+}
+.hero::after { content: ""; position: absolute; right: -80px; top: -120px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 192, 179, .22), transparent 65%); pointer-events: none; }
+.hero .kicker { color: #fff; opacity: .92; }
+.hero h2 { color: #fff; font-size: clamp(26px, 3.4vw, 40px); margin-top: 10px; max-width: 760px; position: relative; z-index: 1; }
+.hero p { margin-top: 10px; color: rgba(255, 255, 255, .94); max-width: 640px; position: relative; z-index: 1; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; position: relative; z-index: 1; }
+.btn-on-hero { background: #fff; color: #0A0F1A; }
+.btn-glass { background: rgba(255, 255, 255, .14); color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); }
+.btn-glass:hover { background: rgba(255, 255, 255, .22); }
+.hero-tiles { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: -64px 24px 24px; }
+.delta { display: inline-flex; align-items: center; gap: 4px; font: 600 12px/1 var(--f-body); margin-top: 8px; }
+.delta.up { color: var(--ok-text); }
+.delta.down { color: var(--bad-text); }
+
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; }
+.grid-2 + .grid-2 { margin-top: 20px; }
+.card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.card-head .tblock .kicker { margin-bottom: 6px; }
+.card-head .tblock h3 { font-size: 18px; }
+
+.bars { display: flex; flex-direction: column; gap: 14px; }
+.bar-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 64px; gap: 14px; align-items: center; font-size: 14px; }
+.bar-row .lab { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-row .num { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar-row .progress { height: 10px; }
+@container (max-width: 420px) {
+  .bar-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .bar-row .progress { grid-column: 1 / -1; order: 3; }
+}
+
+.list { display: flex; flex-direction: column; }
+.li { display: flex; align-items: center; gap: 12px; padding: 12px 0; box-shadow: 0 1px 0 var(--hair); }
+.li:last-child { box-shadow: none; padding-bottom: 0; }
+.li:first-child { padding-top: 0; }
+.li .tblock b { font-size: 14.5px; font-weight: 600; }
+.li .tblock small { font-size: 12.5px; color: var(--muted); }
+.rank { width: 26px; height: 26px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; font: 700 12px/1 var(--f-title); color: var(--ink-2); flex: none; }
+.trend { font: 600 13px/1 var(--f-body); color: var(--ok-text); white-space: nowrap; }
+
+.health-bar { display: flex; height: 12px; border-radius: 99px; overflow: hidden; gap: 3px; margin: 6px 0 16px; }
+.health-bar span:nth-child(1) { background: var(--ok); }
+.health-bar span:nth-child(2) { background: var(--warn); }
+.health-bar span:nth-child(3) { background: var(--bad); }
+.health-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.health-legend .tile { padding: 12px 14px; box-shadow: none; background: var(--surface-2); }
+.health-legend .val { font-size: 22px; margin-top: 8px; }
+@container (max-width: 380px) { .health-legend { grid-template-columns: minmax(0, 1fr); } }
+
+/* =========================================================
+   9. PANTALLA: AGENTES
+   ========================================================= */
+.featured { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0; padding: 0; overflow: hidden; margin-bottom: 22px; }
+.featured .f-body { padding: 26px 28px; display: flex; flex-direction: column; gap: 12px; }
+.featured .f-body h3 { font-size: 24px; font-weight: 800; }
+.featured .f-body p { color: var(--muted); }
+.featured .f-art { background: var(--grad-hero); position: relative; min-height: 200px; display: grid; place-items: center; }
+.featured .f-art .orb { margin: 0; width: 84px; height: 84px; border-radius: 24px; background: #fff; color: #0A0F1A; }
+.featured .f-art .orb svg { width: 42px; height: 42px; }
+.featured .f-art .orb::after { display: none; }
+.f-stats { display: flex; gap: 22px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.f-stats b { display: block; font: 800 20px/1.1 var(--f-title); letter-spacing: -0.04em; color: var(--ink); }
+@container (max-width: 640px) {
+  .featured { grid-template-columns: minmax(0, 1fr); }
+  .featured .f-art { min-height: 140px; order: -1; }
+}
+.featured-wrap { container-type: inline-size; }
+
+.grid-agents { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 268px), 1fr)); gap: 16px; }
+.agent { display: flex; flex-direction: column; gap: 12px; }
+.agent-head { display: flex; align-items: center; gap: 12px; }
+.agent .ic-tile { background: var(--ink); color: var(--bg); }
+.agent-head .tblock b { font: 700 16px/1.25 var(--f-title); letter-spacing: -0.03em; }
+.agent-head .tblock small { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.agent p { color: var(--muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.9em; }
+.agent-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.agent-foot .btn { margin-left: auto; height: 34px; padding: 0 13px; font-size: 13px; }
+
+/* =========================================================
+   10. RESPONSIVE
+   ========================================================= */
+/* ≤1280: sidebar solo íconos (con nombre accesible y title) */
+@media (max-width: 1280px) {
+  :root { --side-w: 76px; --pad: 28px; }
+  .side { padding: 18px 12px; align-items: center; }
+  .side-head { padding: 0; }
+  .brand-word, .new-chat .lbl, .new-chat .kbd, .nav .lbl, .recent, .me .tblock, .me .icon-btn { display: none; }
+  .new-chat { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .nav a { width: 48px; height: 46px; padding: 0; justify-content: center; }
+  .nav a[aria-current="page"]::before { left: -12px; }
+  .me { margin-top: auto; padding: 6px; background: transparent; box-shadow: none; }
+  .chat-wrap { grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; }
+  .tiles-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  .chat-aside { display: none; }
+  .chat-wrap { grid-template-columns: minmax(0, 1fr); }
+}
+/* ≤900: sidebar pasa a barra superior; layouts a una columna */
+@media (max-width: 900px) {
+  :root { --pad: 20px; }
+  .app { display: block; }
+  .side {
+    position: sticky; top: 0; height: auto; flex-direction: row; align-items: center;
+    gap: 6px; padding: 10px 16px 13px; box-shadow: 0 1px 0 var(--hair);
+  }
+  .side::after { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 3px; background: var(--grad-bar); }
+  .side-head { order: 0; margin-right: auto; }
+  .nav { order: 1; flex-direction: row; gap: 2px; }
+  .nav a { width: 42px; height: 40px; }
+  .nav a[aria-current="page"]::before { left: 10px; right: 10px; top: auto; bottom: -1px; width: auto; height: 3px; }
+  .new-chat { order: 2; width: 40px; height: 40px; }
+  .me { order: 3; margin: 0; padding: 0; }
+  .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .topbar { position: static; }
+  .grid-2, .featured { grid-template-columns: minmax(0, 1fr); }
+  .hero-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles-row .tile:last-child { grid-column: 1 / -1; }
+  .search { max-width: none; margin-left: 0; flex-basis: 100%; }
+}
+/* ≤640: móvil */
+@media (max-width: 640px) {
+  :root { --pad: 16px; --top-h: 58px; }
+  .side { padding: 8px 12px 11px; }
+  .brand-mark { width: 32px; height: 32px; }
+  .nav a { width: 38px; }
+  .topbar h1 { font-size: 18px; }
+  .topbar .kicker { display: none; }
+  .model .lbl, .share-btn { display: none; }
+  .model { padding: 0 10px; }
+  .view { padding: 20px var(--pad) 32px; }
+  h2 { font-size: 24px; }
+  .hero { padding: 24px 22px 88px; }
+  .hero-tiles { margin: -64px 12px 20px; gap: 10px; }
+  .tile { padding: 14px; }
+  .tile .val { font-size: 22px; }
+  .card { padding: 18px; }
+  .suggest { grid-template-columns: minmax(0, 1fr); }
+  .suggest .sug:nth-child(n+4) { display: none; }
+  .hello { min-height: auto; padding-top: 8px; }
+  .orb { width: 52px; height: 52px; }
+  .msg-a { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .msg-a .mini { width: 28px; height: 28px; }
+  .featured .f-body { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ===== Sprite de íconos lineales ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24"><path d="m21 11-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6L15 6.6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+    <symbol id="i-like" viewBox="0 0 24 24"><path d="M7 10v11H4V10h3Zm0 0 4-7a2 2 0 0 1 3 2l-1 5h6a2 2 0 0 1 2 2.3l-1.4 7A2 2 0 0 1 17.6 21H7"/></symbol>
+    <symbol id="i-dislike" viewBox="0 0 24 24"><path d="M17 14V3h3v11h-3Zm0 0-4 7a2 2 0 0 1-3-2l1-5H5a2 2 0 0 1-2-2.3l1.4-7A2 2 0 0 1 6.4 3H17"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6"/><path d="M15.5 9.2A6 6 0 1 1 9.2 15.5"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7 15h10"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3 3 0 0 0 6 0L6 7Zm12 0-3 7a3 3 0 0 0 6 0l-3-7Z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3Z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5Z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+    <!-- Marca: placeholder minimalista (reemplazar por logo oficial blanco/negro) -->
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M17.5 7.2A7 7 0 1 0 17.5 16.8"/><circle cx="12" cy="12" r="1.6"/><path d="M12 12h5.5"/><circle cx="18.6" cy="12" r=".6"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="side" aria-label="Navegación principal">
+    <div class="side-head">
+      <a class="brand" href="#asistente" aria-label="Cerebro Institucional — inicio" title="Cerebro Institucional">
+        <span class="brand-mark"><svg viewBox="0 0 24 24"><use href="#i-mark"/></svg></span>
+        <span class="brand-word"><b>cerebro</b><small>Institucional</small></span>
+      </a>
+    </div>
+
+    <button class="btn btn-primary new-chat" data-new aria-label="Nuevo chat" title="Nuevo chat">
+      <svg class="ico ico-sm"><use href="#i-edit"/></svg><span class="lbl">Nuevo chat</span><span class="kbd">⌘ K</span>
+    </button>
+
+    <nav class="nav" aria-label="Secciones">
+      <a href="#asistente" data-nav="asistente" aria-label="Asistente" title="Asistente"><svg class="ico"><use href="#i-chat"/></svg><span class="lbl">Asistente</span></a>
+      <a href="#agentes" data-nav="agentes" aria-label="Agentes" title="Agentes"><svg class="ico"><use href="#i-grid"/></svg><span class="lbl">Agentes</span></a>
+      <a href="#conocimiento" data-nav="conocimiento" aria-label="Base de conocimiento" title="Base de conocimiento"><svg class="ico"><use href="#i-book"/></svg><span class="lbl">Base de conocimiento</span></a>
+      <a href="#panel" data-nav="panel" aria-label="Panel de uso" title="Panel de uso"><svg class="ico"><use href="#i-chart"/></svg><span class="lbl">Panel de uso</span></a>
+    </nav>
+
+    <div class="recent" aria-label="Conversaciones recientes">
+      <h4>Hoy</h4>
+      <a href="#chat" class="on" title="Calendario académico 2027-1 y pago extemporáneo">Calendario académico 2027-1 y pago extemporáneo</a>
+      <a href="#chat" title="Requisitos de homologación desde tecnólogo SENA">Requisitos de homologación desde tecnólogo SENA</a>
+      <h4>Ayer</h4>
+      <a href="#chat" title="Resumen del Acuerdo 023 de 2026 del Consejo Superior">Resumen del Acuerdo 023 de 2026 del Consejo Superior</a>
+      <a href="#chat" title="Indicadores de investigación para registro calificado">Indicadores de investigación para registro calificado</a>
+      <h4>Últimos 7 días</h4>
+      <a href="#chat" title="Borrador de correo a estudiantes de primer semestre">Borrador de correo a estudiantes de primer semestre</a>
+      <a href="#chat" title="Comparar opciones de grado: diplomado vs. trabajo de grado">Comparar opciones de grado: diplomado vs. trabajo de grado</a>
+      <a href="#chat" title="Convocatoria de becas por mérito académico">Convocatoria de becas por mérito académico</a>
+    </div>
+
+    <div class="me">
+      <span class="avatar" aria-hidden="true">DG</span>
+      <span class="tblock"><b>Daniel González</b><small>Plan institucional</small></span>
+      <button class="icon-btn sm" aria-label="Configuración" title="Configuración"><svg class="ico ico-sm"><use href="#i-settings"/></svg></button>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="tblock">
+        <span class="kicker" id="top-kicker">Asistente</span>
+        <h1 id="top-title">nuevo chat</h1>
+      </div>
+      <div class="top-actions">
+        <button class="model" aria-label="Modelo: Cerebro institucional" title="Cambiar modelo">
+          <span class="dot" aria-hidden="true"></span><span class="lbl">Cerebro · institucional</span>
+          <svg class="ico ico-sm"><use href="#i-down"/></svg>
+        </button>
+        <button class="icon-btn share-btn" aria-label="Compartir" title="Compartir"><svg class="ico"><use href="#i-share"/></svg></button>
+        <button class="icon-btn" id="theme-btn" aria-label="Cambiar a tema oscuro" title="Cambiar tema">
+          <svg class="ico"><use id="theme-ico" href="#i-moon"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+    <!-- ============ PANTALLA 1: ASISTENTE (vacío) ============ -->
+    <section class="view" id="v-asistente" aria-labelledby="hello-title">
+      <div class="hello">
+        <div class="hello-head">
+          <div class="orb" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-mark"/></svg></div>
+          <span class="kicker">Lunes, 12 de octubre</span>
+          <h2 id="hello-title">buenas tardes, daniel.</h2>
+          <p>Pregunta lo que necesites sobre la universidad. Respondo con fuentes oficiales.</p>
+        </div>
+
+        <form class="composer" data-composer>
+          <span class="agent-tag" data-agent-tag>
+            <svg class="ico ico-sm"><use href="#i-grid"/></svg><span data-agent-name>Agente</span>
+            <button type="button" data-agent-clear aria-label="Quitar agente"><svg class="ico ico-sm"><use href="#i-x"/></svg></button>
+          </span>
+          <label class="sr-only" for="q1">Escribe tu pregunta</label>
+          <textarea id="q1" rows="2" placeholder="Pregúntale al cerebro institucional…"></textarea>
+          <div class="composer-row">
+            <button type="button" class="icon-btn sm" aria-label="Adjuntar archivo" title="Adjuntar archivo"><svg class="ico ico-sm"><use href="#i-clip"/></svg></button>
+            <button type="button" class="src-toggle" aria-pressed="true" title="Reglamentos y acuerdos"><svg class="ico ico-sm"><use href="#i-scale"/></svg><span class="lbl">Reglamentos</span></button>
+            <button type="button" class="src-toggle" aria-pressed="true" title="Calendario académico"><svg class="ico ico-sm"><use href="#i-cal"/></svg><span class="lbl">Calendario</span></button>
+            <button type="button" class="src-toggle" aria-pressed="false" title="Investigación"><svg class="ico ico-sm"><use href="#i-flask"/></svg><span class="lbl">Investigación</span></button>
+            <button type="button" class="icon-btn sm" aria-label="Dictar por voz" title="Dictar por voz" style="margin-left:auto"><svg class="ico ico-sm"><use href="#i-mic"/></svg></button>
+            <button type="submit" class="send" aria-label="Enviar pregunta" style="margin-left:0" disabled><svg class="ico"><use href="#i-up"/></svg></button>
+          </div>
+        </form>
+
+        <div class="suggest">
+          <button class="sug" data-q="¿Cuáles son las fechas clave del calendario académico 2027-1 y qué pasa si pago la matrícula extemporánea?">
+            <svg class="ico"><use href="#i-cal"/></svg><span><b>Fechas de matrícula 2027-1</b><span>Pagos, inscripción y recargos</span></span>
+          </button>
+          <button class="sug" data-q="¿Qué requisitos tengo para homologar asignaturas si vengo de un tecnólogo?">
+            <svg class="ico"><use href="#i-cap"/></svg><span><b>Homologación de asignaturas</b><span>Requisitos y tiempos de respuesta</span></span>
+          </button>
+          <button class="sug" data-q="Resume en 5 puntos las becas por mérito académico vigentes.">
+            <svg class="ico"><use href="#i-coins"/></svg><span><b>Becas por mérito académico</b><span>Resumen en cinco puntos</span></span>
+          </button>
+          <button class="sug" data-q="Redacta un correo para estudiantes de primer semestre sobre la semana de inducción.">
+            <svg class="ico"><use href="#i-pen"/></svg><span><b>Redactar un comunicado</b><span>Correo de inducción a primer semestre</span></span>
+          </button>
+        </div>
+
+        <div class="sources-line">
+          <span class="chip ok">128 fuentes conectadas</span>
+          <span>Actualizado hace 2 h · Las respuestas citan documentos oficiales</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 2: CONVERSACIÓN ============ -->
+    <section class="view" id="v-chat" aria-label="Conversación">
+      <div class="chat-wrap">
+        <div>
+          <div class="thread" id="thread" aria-live="polite">
+            <!-- contenido inicial cargado desde la plantilla -->
+          </div>
+          <div class="dock">
+            <form class="composer" data-composer>
+              <label class="sr-only" for="q2">Escribe tu siguiente pregunta</label>
+              <textarea id="q2" rows="1" placeholder="Haz una pregunta de seguimiento…"></textarea>
+              <div class="composer-row">
+                <button type="button" class="icon-btn sm" aria-label="Adjuntar archivo" title="Adjuntar archivo"><svg class="ico ico-sm"><use href="#i-clip"/></svg></button>
+                <button type="button" class="src-toggle" aria-pressed="true" title="Reglamentos y acuerdos"><svg class="ico ico-sm"><use href="#i-scale"/></svg><span class="lbl">Reglamentos</span></button>
+                <button type="button" class="src-toggle" aria-pressed="true" title="Calendario académico"><svg class="ico ico-sm"><use href="#i-cal"/></svg><span class="lbl">Calendario</span></button>
+                <button type="submit" class="send" aria-label="Enviar pregunta" disabled><svg class="ico"><use href="#i-up"/></svg></button>
+              </div>
+            </form>
+            <p class="composer-note">Cerebro puede equivocarse. Verifica decisiones importantes en la fuente citada.</p>
+          </div>
+        </div>
+
+        <aside class="chat-aside" aria-label="Fuentes de esta respuesta">
+          <div class="card">
+            <div class="card-head" style="margin-bottom:0">
+              <div class="tblock"><span class="kicker">Respaldo</span><h3>fuentes de esta respuesta</h3></div>
+            </div>
+            <div class="aside-src">
+              <div class="aside-item">
+                <div class="row"><span class="ic-tile" style="width:34px;height:34px"><svg class="ico ico-sm"><use href="#i-cal"/></svg></span>
+                  <span class="tblock"><b>Calendario académico 2027-1</b><small>Registro académico · PDF · 12 pág.</small></span></div>
+                <div class="meta"><span class="pill academico">Académico</span><span class="chip ok">Al día</span></div>
+              </div>
+              <div class="aside-item">
+                <div class="row"><span class="ic-tile" style="width:34px;height:34px"><svg class="ico ico-sm"><use href="#i-coins"/></svg></span>
+                  <span class="tblock"><b>Derechos pecuniarios 2027</b><small>Dirección Financiera · Borrador</small></span></div>
+                <div class="meta"><span class="pill financiero">Financiero</span><span class="chip warn">En alerta</span></div>
+              </div>
+              <div class="aside-item">
+                <div class="row"><span class="ic-tile" style="width:34px;height:34px"><svg class="ico ico-sm"><use href="#i-scale"/></svg></span>
+                  <span class="tblock"><b>Reglamento estudiantil de pregrado</b><small>Secretaría General · Art. 34</small></span></div>
+                <div class="meta"><span class="pill normativo">Normativo</span><span class="chip ok">Al día</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="kicker">Confianza</span>
+            <div class="confidence">
+              <span class="val">92 %</span>
+              <span class="muted" style="font-size:13px">3 fuentes oficiales coinciden. 1 está pendiente de aprobación.</span>
+            </div>
+            <div class="progress" style="margin-top:14px"><span style="width:92%"></span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <template id="tpl-thread">
+      <div class="msg-u">¿Cuáles son las fechas clave del calendario académico 2027-1 para pregrado y qué pasa si pago la matrícula extemporánea?</div>
+      <div class="msg-a">
+        <span class="mini" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-mark"/></svg></span>
+        <div class="answer">
+          <div class="answer-meta"><span class="who">Cerebro</span><span class="chip ok">Respuesta verificada</span></div>
+          <p>Estas son las fechas clave del <strong>periodo 2027-1 para pregrado</strong> según el calendario publicado por Registro Académico<span class="cite">1</span>:</p>
+          <div class="kv">
+            <div class="kv-row"><span class="k">Pago de matrícula ordinaria</span><span class="v">Hasta el 15 ene 2027</span></div>
+            <div class="kv-row"><span class="k">Pago extemporáneo (con recargo)</span><span class="v">18 – 29 ene 2027</span></div>
+            <div class="kv-row"><span class="k">Inscripción de asignaturas</span><span class="v">19 – 23 ene 2027</span></div>
+            <div class="kv-row"><span class="k">Inicio de clases</span><span class="v">1 feb 2027</span></div>
+            <div class="kv-row"><span class="k">Retiro de asignaturas sin nota</span><span class="v">Hasta el 12 mar 2027</span></div>
+          </div>
+          <p>Si pagas en fechas extemporáneas se aplica un <strong>recargo del 8 % sobre el valor de la matrícula</strong><span class="cite">2</span> y la inscripción de asignaturas se habilita 24 horas después de confirmado el pago, sujeta a cupos disponibles<span class="cite">3</span>.</p>
+          <div class="callout" role="note">
+            <svg class="ico"><use href="#i-alert"/></svg>
+            <span>El porcentaje de recargo proviene del borrador de <strong>Derechos pecuniarios 2027</strong>, que aún no tiene versión aprobada. Confírmalo con la Dirección Financiera antes de comunicarlo.</span>
+          </div>
+          <div class="cards-src">
+            <a class="src-mini" href="#conocimiento"><span class="n">1</span><span class="tblock"><b>Calendario académico 2027-1</b><small>Registro académico</small></span></a>
+            <a class="src-mini" href="#conocimiento"><span class="n">2</span><span class="tblock"><b>Derechos pecuniarios 2027</b><small>Dirección Financiera</small></span></a>
+            <a class="src-mini" href="#conocimiento"><span class="n">3</span><span class="tblock"><b>Reglamento estudiantil, art. 34</b><small>Secretaría General</small></span></a>
+          </div>
+          <div class="actions">
+            <button class="icon-btn sm" aria-label="Copiar respuesta" title="Copiar"><svg class="ico ico-sm"><use href="#i-copy"/></svg></button>
+            <button class="icon-btn sm" aria-label="Buena respuesta" title="Buena respuesta"><svg class="ico ico-sm"><use href="#i-like"/></svg></button>
+            <button class="icon-btn sm" aria-label="Mala respuesta" title="Mala respuesta"><svg class="ico ico-sm"><use href="#i-dislike"/></svg></button>
+            <button class="icon-btn sm" aria-label="Regenerar respuesta" title="Regenerar"><svg class="ico ico-sm"><use href="#i-refresh"/></svg></button>
+          </div>
+          <div class="follow">
+            <button data-q="¿Puedo solicitar aplazamiento del semestre 2027-1?">¿Puedo solicitar aplazamiento?</button>
+            <button data-q="Crea recordatorios en mi calendario para estas fechas.">Crear recordatorios</button>
+            <button data-q="¿Qué opciones de financiación existen para la matrícula?">Opciones de financiación</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- ============ PANTALLA 3: BASE DE CONOCIMIENTO ============ -->
+    <section class="view" id="v-conocimiento" aria-labelledby="kb-title">
+      <div class="page-head">
+        <div class="tblock">
+          <span class="kicker">Fuentes institucionales</span>
+          <h2 id="kb-title">lo que sabe el cerebro</h2>
+          <p>Documentos oficiales indexados, su estado de sincronización y quién responde por cada uno.</p>
+        </div>
+        <button class="btn btn-primary"><svg class="ico ico-sm"><use href="#i-plus"/></svg>Conectar fuente</button>
+      </div>
+
+      <div class="tiles-row">
+        <div class="tile"><span class="lab">Fuentes conectadas</span><div class="val">128</div></div>
+        <div class="tile"><span class="lab">Documentos indexados</span><div class="val">46.302</div></div>
+        <div class="tile"><span class="chip ok">Al día</span><div class="val">112</div></div>
+        <div class="tile"><span class="chip warn">En alerta</span><div class="val">11</div></div>
+        <div class="tile"><span class="chip bad">En riesgo</span><div class="val">5</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="Filtrar por categoría" data-tabs="kb">
+          <button class="tab" role="tab" aria-selected="true" data-f="all">Todas</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="academico">Académico</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="financiero">Financiero</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="investigacion">Investigación</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="bienestar">Bienestar</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="normativo">Normativo</button>
+        </div>
+        <label class="search"><svg class="ico ico-sm"><use href="#i-search"/></svg><span class="sr-only">Buscar fuente</span><input type="search" placeholder="Buscar fuente o responsable" data-kb-search></label>
+      </div>
+
+      <div class="grid-src" id="grid-src"></div>
+    </section>
+
+    <!-- ============ PANTALLA 4: PANEL DE USO ============ -->
+    <section class="view" id="v-panel" aria-labelledby="panel-title">
+      <div class="hero">
+        <span class="kicker">Octubre 2026 · corte al día 12</span>
+        <h2 id="panel-title">18.240 consultas resueltas este mes, el 98,7 % con fuente oficial</h2>
+        <p>La comunidad pregunta más por pagos y homologaciones. Cinco fuentes necesitan atención para no degradar la calidad de las respuestas.</p>
+        <div class="hero-actions">
+          <button class="btn btn-on-hero"><svg class="ico ico-sm"><use href="#i-share"/></svg>Exportar informe</button>
+          <a class="btn btn-glass" href="#conocimiento" style="text-decoration:none"><svg class="ico ico-sm"><use href="#i-alert"/></svg>Ver fuentes en riesgo</a>
+        </div>
+      </div>
+      <div class="hero-tiles">
+        <div class="tile"><span class="lab">Usuarios activos</span><div class="val">6.412</div><span class="delta up"><svg class="ico ico-sm"><use href="#i-up"/></svg>+9,8 % vs. sep.</span></div>
+        <div class="tile"><span class="lab">Satisfacción</span><div class="val">94 %</div><span class="delta up"><svg class="ico ico-sm"><use href="#i-up"/></svg>+2 pts</span></div>
+        <div class="tile"><span class="lab">Tiempo de respuesta</span><div class="val">3,8 s</div><span class="delta up"><svg class="ico ico-sm" style="transform:rotate(180deg)"><use href="#i-up"/></svg>−0,6 s</span></div>
+        <div class="tile"><span class="lab">Escalado a humano</span><div class="val">2,1 %</div><span class="delta down"><svg class="ico ico-sm"><use href="#i-up"/></svg>+0,3 pts</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="tblock"><span class="kicker">Distribución</span><h3>consultas por área</h3></div><span class="chip ok">Al día</span></div>
+          <div class="bars" id="bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="tblock"><span class="kicker">Calidad de fuentes</span><h3>salud de la base</h3></div></div>
+          <div class="health-bar" role="img" aria-label="112 fuentes al día, 11 en alerta, 5 en riesgo">
+            <span style="flex:112"></span><span style="flex:11"></span><span style="flex:5"></span>
+          </div>
+          <div class="health-legend">
+            <div class="tile"><span class="chip ok">Al día</span><div class="val">112</div></div>
+            <div class="tile"><span class="chip warn">En alerta</span><div class="val">11</div></div>
+            <div class="tile"><span class="chip bad">En riesgo</span><div class="val">5</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="tblock"><span class="kicker">Tendencias</span><h3>temas que más crecen</h3></div></div>
+          <div class="list">
+            <div class="li"><span class="rank">1</span><span class="tblock"><b>Fechas de pago 2027-1</b><small>2.140 consultas · Financiero</small></span><span class="trend">+38 %</span></div>
+            <div class="li"><span class="rank">2</span><span class="tblock"><b>Homologación de asignaturas</b><small>1.312 consultas · Académico</small></span><span class="trend">+22 %</span></div>
+            <div class="li"><span class="rank">3</span><span class="tblock"><b>Opciones de grado</b><small>986 consultas · Académico</small></span><span class="trend">+17 %</span></div>
+            <div class="li"><span class="rank">4</span><span class="tblock"><b>Convocatoria de becas por mérito</b><small>742 consultas · Financiero</small></span><span class="trend">+12 %</span></div>
+            <div class="li"><span class="rank">5</span><span class="tblock"><b>Prácticas empresariales</b><small>530 consultas · Académico</small></span><span class="trend">+9 %</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="tblock"><span class="kicker">Requieren acción</span><h3>alertas recientes</h3></div></div>
+          <div class="list">
+            <div class="li"><span class="tblock"><b>Protocolo de salud mental</b><small>Error de permisos en SharePoint · hace 5 h</small></span><span class="chip bad">En riesgo</span></div>
+            <div class="li"><span class="tblock"><b>FAQ de admisiones</b><small>La página fuente no responde · hace 3 días</small></span><span class="chip bad">En riesgo</span></div>
+            <div class="li"><span class="tblock"><b>Derechos pecuniarios 2027</b><small>Sin versión aprobada · hace 21 días</small></span><span class="chip warn">En alerta</span></div>
+            <div class="li"><span class="tblock"><b>Grupos de investigación</b><small>3 fichas sin actualizar en 2026</small></span><span class="chip warn">En alerta</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PANTALLA 5: AGENTES ============ -->
+    <section class="view" id="v-agentes" aria-labelledby="ag-title">
+      <div class="page-head">
+        <div class="tblock">
+          <span class="kicker">Agentes especializados</span>
+          <h2 id="ag-title">un experto para cada trámite</h2>
+          <p>Asistentes entrenados con las fuentes de cada dependencia. Elige uno y conversa como en un chat.</p>
+        </div>
+        <button class="btn btn-ghost"><svg class="ico ico-sm"><use href="#i-plus"/></svg>Crear agente</button>
+      </div>
+
+      <div class="featured-wrap">
+        <div class="card featured">
+          <div class="f-body">
+            <span class="kicker">Destacado de la semana</span>
+            <h3>asesor académico</h3>
+            <p>Resuelve dudas de plan de estudios, prerrequisitos, homologaciones y opciones de grado con el catálogo vigente de cada programa.</p>
+            <div class="src-tags"><span class="pill academico">Académico</span><span class="chip ok">Al día</span></div>
+            <div class="f-stats">
+              <span><b>4.180</b>conversaciones</span>
+              <span><b>96 %</b>satisfacción</span>
+              <span><b>34</b>fuentes</span>
+            </div>
+            <div><button class="btn btn-primary" data-agent="Asesor académico"><svg class="ico ico-sm"><use href="#i-chat"/></svg>Abrir chat</button></div>
+          </div>
+          <div class="f-art" aria-hidden="true"><div class="orb"><svg viewBox="0 0 24 24"><use href="#i-cap"/></svg></div></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="Filtrar agentes" data-tabs="ag">
+          <button class="tab" role="tab" aria-selected="true" data-f="all">Todos</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="academico">Académico</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="administrativo">Administrativo</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="investigacion">Investigación</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="bienestar">Bienestar</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="productividad">Productividad</button>
+        </div>
+      </div>
+      <div class="grid-agents" id="grid-agents"></div>
+    </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /* ---------- Tema: sigue al sistema; el botón lo fija en memoria ---------- */
+  const root = document.documentElement;
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  let chosen = null;
+  function applyTheme(t) {
+    root.setAttribute('data-theme', t);
+    const dark = t === 'dark';
+    $('#theme-ico').setAttribute('href', dark ? '#i-sun' : '#i-moon');
+    $('#theme-btn').setAttribute('aria-label', dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+  }
+  applyTheme(root.getAttribute('data-theme'));
+  mq.addEventListener && mq.addEventListener('change', e => { if (!chosen) applyTheme(e.matches ? 'dark' : 'light'); });
+  $('#theme-btn').addEventListener('click', () => { chosen = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; applyTheme(chosen); });
+
+  /* ---------- Datos de ejemplo ---------- */
+  const SOURCES = [
+    { n: 'Calendario académico 2027-1', o: 'Registro Académico', c: 'academico', cl: 'Académico', s: 'ok', p: 100, d: '12 documentos', u: 'hace 2 h', i: 'i-cal', f: 'PDF' },
+    { n: 'Reglamento estudiantil de pregrado', o: 'Secretaría General', c: 'normativo', cl: 'Normativo', s: 'ok', p: 100, d: '1 documento · 214 pág.', u: 'hace 3 días', i: 'i-scale', f: 'PDF' },
+    { n: 'Catálogo de programas y planes de estudio', o: 'Vicerrectoría Académica', c: 'academico', cl: 'Académico', s: 'ok', p: 98, d: '1.284 documentos', u: 'hace 6 h', i: 'i-cap', f: 'SharePoint' },
+    { n: 'Derechos pecuniarios 2027', o: 'Dirección Financiera', c: 'financiero', cl: 'Financiero', s: 'warn', p: 74, d: '3 documentos', u: 'hace 21 días', i: 'i-coins', f: 'Excel', note: 'Pendiente versión aprobada por Consejo Superior.' },
+    { n: 'Becas y apoyos financieros', o: 'Crédito y Cartera', c: 'financiero', cl: 'Financiero', s: 'ok', p: 100, d: '86 documentos', u: 'hace 1 día', i: 'i-coins', f: 'Web' },
+    { n: 'Repositorio institucional de investigación', o: 'Biblioteca', c: 'investigacion', cl: 'Investigación', s: 'ok', p: 92, d: '18.430 documentos', u: 'hace 4 h', i: 'i-flask', f: 'DSpace' },
+    { n: 'Grupos y semilleros de investigación', o: 'Dirección de Investigación', c: 'investigacion', cl: 'Investigación', s: 'warn', p: 81, d: '57 fichas', u: 'hace 9 días', i: 'i-users', f: 'Web', note: '3 fichas de grupo sin actualizar en 2026.' },
+    { n: 'Programas de bienestar universitario', o: 'Bienestar Universitario', c: 'bienestar', cl: 'Bienestar', s: 'ok', p: 100, d: '142 documentos', u: 'hace 2 días', i: 'i-heart', f: 'Web' },
+    { n: 'Protocolo de salud mental y primeros auxilios psicológicos', o: 'Bienestar Universitario', c: 'bienestar', cl: 'Bienestar', s: 'bad', p: 38, d: '9 documentos', u: 'hace 5 h', i: 'i-heart', f: 'SharePoint', note: 'Error de permisos: el conector perdió acceso a la carpeta.' },
+    { n: 'Acuerdos del Consejo Superior 2018–2026', o: 'Secretaría General', c: 'normativo', cl: 'Normativo', s: 'ok', p: 100, d: '612 documentos', u: 'hace 1 día', i: 'i-scale', f: 'PDF' },
+    { n: 'Preguntas frecuentes de admisiones', o: 'Mercadeo y Admisiones', c: 'academico', cl: 'Académico', s: 'bad', p: 52, d: '240 preguntas', u: 'hace 3 días', i: 'i-chat', f: 'Web', note: 'La página fuente no responde desde el 9 de octubre.' },
+    { n: 'Opciones de grado', o: 'Vicerrectoría Académica', c: 'academico', cl: 'Académico', s: 'ok', p: 100, d: '34 documentos', u: 'hace 2 días', i: 'i-file', f: 'PDF' }
+  ];
+  const STATUS = { ok: 'Al día', warn: 'En alerta', bad: 'En riesgo' };
+
+  const AGENTS = [
+    { n: 'Asesor académico', o: 'Vicerrectoría Académica', c: 'academico', cl: 'Académico', s: 'ok', i: 'i-cap', d: 'Plan de estudios, prerrequisitos, homologaciones y opciones de grado.', k: '4,2 k' },
+    { n: 'Admisiones y matrícula', o: 'Mercadeo y Admisiones', c: 'administrativo', cl: 'Administrativo', s: 'bad', i: 'i-users', d: 'Inscripción, requisitos de ingreso, entrevistas y fechas de admisión por programa.', k: '3,1 k' },
+    { n: 'Finanzas estudiantiles', o: 'Dirección Financiera', c: 'administrativo', cl: 'Administrativo', s: 'warn', i: 'i-coins', d: 'Valores de matrícula, recargos, financiación, becas y paz y salvos.', k: '2,8 k' },
+    { n: 'Investigación y publicaciones', o: 'Dirección de Investigación', c: 'investigacion', cl: 'Investigación', s: 'ok', i: 'i-flask', d: 'Convocatorias internas, grupos, semilleros y búsqueda en el repositorio institucional.', k: '1,2 k' },
+    { n: 'Bienestar y acompañamiento', o: 'Bienestar Universitario', c: 'bienestar', cl: 'Bienestar', s: 'bad', i: 'i-heart', d: 'Programas de bienestar, citas de acompañamiento y rutas de atención.', k: '980' },
+    { n: 'Normativa y reglamentos', o: 'Secretaría General', c: 'administrativo', cl: 'Administrativo', s: 'ok', i: 'i-scale', d: 'Interpreta reglamentos y acuerdos del Consejo Superior citando el artículo exacto.', k: '1,6 k' },
+    { n: 'Redactor institucional', o: 'Comunicaciones', c: 'productividad', cl: 'Productividad', s: 'ok', i: 'i-pen', d: 'Redacta correos, circulares y piezas con el tono y la línea gráfica de la universidad.', k: '2,3 k' },
+    { n: 'Analista de datos académicos', o: 'Planeación', c: 'productividad', cl: 'Productividad', s: 'ok', i: 'i-chart', d: 'Indicadores de deserción, matrícula y graduación para informes y registro calificado.', k: '640' }
+  ];
+
+  const AREAS = [['Académico', 7320], ['Financiero', 4610], ['Admisiones', 2890], ['Investigación', 1740], ['Bienestar', 1120], ['Otros', 560]];
+  const fmt = n => n.toLocaleString('es-CO');
+
+  /* ---------- Render: base de conocimiento ---------- */
+  function renderSources(filter = 'all', q = '') {
+    const qq = q.trim().toLowerCase();
+    const list = SOURCES.filter(s => (filter === 'all' || s.c === filter) && (!qq || (s.n + ' ' + s.o).toLowerCase().includes(qq)));
+    $('#grid-src').innerHTML = list.length ? list.map(s => `
+      <article class="card src-card">
+        <div class="src-head">
+          <span class="ic-tile"><svg class="ico"><use href="#${s.i}"/></svg></span>
+          <span class="tblock"><b title="${esc(s.n)}">${esc(s.n)}</b><small>${esc(s.o)}</small></span>
+          <span class="chip ${s.s}">${STATUS[s.s]}</span>
+        </div>
+        <div class="src-tags"><span class="pill ${s.c}">${s.cl}</span><span class="pill neutral">${s.f}</span></div>
+        ${s.note ? `<p class="src-note">${esc(s.note)}</p>` : ''}
+        <div>
+          <div class="prog-head"><span>Indexación</span><b>${s.p} %</b></div>
+          <div class="progress" role="progressbar" aria-valuenow="${s.p}" aria-valuemin="0" aria-valuemax="100" aria-label="Indexación ${s.p} %"><span style="width:${s.p}%"></span></div>
+        </div>
+        <div class="src-foot">
+          <span><svg class="ico ico-sm"><use href="#i-file"/></svg>${s.d}</span>
+          <span><svg class="ico ico-sm"><use href="#i-clock"/></svg>${s.u}</span>
+        </div>
+      </article>`).join('') : `<p class="muted">No hay fuentes que coincidan con la búsqueda.</p>`;
+  }
+
+  /* ---------- Render: agentes ---------- */
+  function renderAgents(filter = 'all') {
+    $('#grid-agents').innerHTML = AGENTS.filter(a => filter === 'all' || a.c === filter).map(a => `
+      <article class="card agent">
+        <div class="agent-head">
+          <span class="ic-tile"><svg class="ico"><use href="#${a.i}"/></svg></span>
+          <span class="tblock"><b title="${esc(a.n)}">${esc(a.n)}</b><small>${esc(a.o)}</small></span>
+        </div>
+        <p>${esc(a.d)}</p>
+        <div class="agent-foot">
+          <span class="pill ${a.c}">${a.cl}</span>
+          <span class="chip ${a.s}">${STATUS[a.s]}</span>
+          <button class="btn btn-ghost" data-agent="${esc(a.n)}">Abrir</button>
+        </div>
+        <span class="muted" style="font-size:12.5px">${a.k} conversaciones este mes</span>
+      </article>`).join('');
+  }
+
+  /* ---------- Render: barras ---------- */
+  const max = Math.max(...AREAS.map(a => a[1]));
+  $('#bars').innerHTML = AREAS.map(([l, v]) => `
+    <div class="bar-row"><span class="lab">${l}</span>
+      <div class="progress" role="img" aria-label="${l}: ${fmt(v)} consultas"><span style="width:${(v / max * 100).toFixed(1)}%"></span></div>
+      <span class="num">${fmt(v)}</span></div>`).join('');
+
+  /* ---------- Pestañas ---------- */
+  $$('[data-tabs]').forEach(group => {
+    group.addEventListener('click', e => {
+      const t = e.target.closest('.tab'); if (!t) return;
+      $$('.tab', group).forEach(b => b.setAttribute('aria-selected', b === t ? 'true' : 'false'));
+      if (group.dataset.tabs === 'kb') renderSources(t.dataset.f, $('[data-kb-search]').value);
+      else renderAgents(t.dataset.f);
+    });
+  });
+  $('[data-kb-search]').addEventListener('input', e => {
+    const f = $('[data-tabs="kb"] [aria-selected="true"]').dataset.f;
+    renderSources(f, e.target.value);
+  });
+
+  /* ---------- Navegación ---------- */
+  const VIEWS = {
+    asistente: ['Asistente', 'nuevo chat', 'asistente'],
+    chat: ['Conversación', 'calendario académico 2027-1', 'asistente'],
+    conocimiento: ['Fuentes', 'base de conocimiento', 'conocimiento'],
+    panel: ['Analítica', 'panel de uso', 'panel'],
+    agentes: ['Explorar', 'agentes', 'agentes']
+  };
+  function route() {
+    const key = (location.hash || '#asistente').slice(1);
+    const v = VIEWS[key] ? key : 'asistente';
+    $$('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+    $$('[data-nav]').forEach(a => { if (a.dataset.nav === VIEWS[v][2]) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    $('#top-kicker').textContent = VIEWS[v][0];
+    $('#top-title').textContent = v === 'chat' ? currentTitle : VIEWS[v][1];
+    document.title = (v === 'chat' ? currentTitle : VIEWS[v][1]) + ' · Cerebro Institucional';
+    window.scrollTo(0, v === 'chat' ? document.body.scrollHeight : 0);
+  }
+  let currentTitle = VIEWS.chat[1];
+  window.addEventListener('hashchange', route);
+
+  /* ---------- Chat ---------- */
+  const thread = $('#thread');
+  thread.innerHTML = $('#tpl-thread').innerHTML;
+
+  const ANSWERS = [
+    [/homolog/i, 'Para homologar asignaturas desde un programa tecnólogo necesitas: certificado de notas original, contenidos programáticos sellados por la institución de origen y una nota mínima de 3,5 en cada asignatura. La solicitud se radica en Registro Académico y tiene respuesta en un máximo de 15 días hábiles. Se puede homologar hasta el 50 % de los créditos del programa.'],
+    [/beca|financ/i, 'Hay tres apoyos vigentes: beca por mérito académico (promedio igual o superior a 4,3), descuento por convenio empresarial y crédito directo con la universidad a seis cuotas sin interés. La próxima convocatoria de mérito abre el 2 de noviembre y cierra el 20 de noviembre de 2026.'],
+    [/aplaza/i, 'Sí. Puedes solicitar aplazamiento hasta la semana 3 del periodo, a través del portal de servicios. Conservas tu cupo por dos periodos consecutivos y el valor pagado queda como saldo a favor, descontando los gastos administrativos definidos en derechos pecuniarios.'],
+    [/correo|redact|comunicado/i, 'Asunto: Bienvenida a la semana de inducción\n\nHola, te damos la bienvenida a la universidad. La semana de inducción será del 25 al 29 de enero de 2027, de 8:00 a. m. a 12:00 m. Conocerás a tu director de programa, activarás tus cuentas institucionales y recorrerás los servicios de Bienestar. Te esperamos.'],
+    [/recordatorio/i, 'Listo. Creé cinco recordatorios en tu calendario institucional: pago ordinario (15 ene), pago extemporáneo (18 ene), inscripción de asignaturas (19 ene), inicio de clases (1 feb) y retiro sin nota (12 mar). Cada uno tiene aviso tres días antes.']
+  ];
+  const fallback = 'Encontré información relacionada en el reglamento estudiantil y el calendario académico vigente. En resumen: el trámite se gestiona en el portal de servicios, tiene respuesta en un máximo de 10 días hábiles y requiere estar a paz y salvo con la Dirección Financiera. Si quieres, te muestro el artículo exacto.';
+
+  function userBubble(text) {
+    const d = document.createElement('div'); d.className = 'msg-u'; d.textContent = text; return d;
+  }
+  function ask(text, fresh) {
+    if (!text.trim()) return;
+    if (fresh) {
+      thread.innerHTML = '';
+      currentTitle = text.toLowerCase().replace(/[¿?.]/g, '').slice(0, 48).trim();
+      $$('.recent a').forEach(a => a.classList.remove('on'));
+    }
+    if (location.hash !== '#chat') location.hash = '#chat'; else route();
+    thread.appendChild(userBubble(text));
+    const a = document.createElement('div');
+    a.className = 'msg-a';
+    const agent = $('[data-agent-name]').textContent;
+    const who = $('[data-agent-tag]').classList.contains('on') ? agent : 'Cerebro';
+    a.innerHTML = `<span class="mini" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-mark"/></svg></span>
+      <div class="answer"><div class="answer-meta"><span class="who">${esc(who)}</span><span class="chip ok">Con fuentes</span></div>
+      <p class="stream"><span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span></p></div>`;
+    thread.appendChild(a);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    const ans = (ANSWERS.find(([re]) => re.test(text)) || [0, fallback])[1];
+    const p = $('.stream', a);
+    setTimeout(() => {
+      p.textContent = ''; p.style.whiteSpace = 'pre-line';
+      const words = ans.split(/(\s+)/); let i = 0;
+      const tick = setInterval(() => {
+        p.textContent += words.slice(i, i + 3).join(''); i += 3;
+        if (i >= words.length) {
+          clearInterval(tick);
+          p.insertAdjacentHTML('beforeend', '<span class="cite">1</span>');
+          a.querySelector('.answer').insertAdjacentHTML('beforeend', `<div class="actions">
+            <button class="icon-btn sm" aria-label="Copiar respuesta" title="Copiar"><svg class="ico ico-sm"><use href="#i-copy"/></svg></button>
+            <button class="icon-btn sm" aria-label="Buena respuesta" title="Buena respuesta"><svg class="ico ico-sm"><use href="#i-like"/></svg></button>
+            <button class="icon-btn sm" aria-label="Mala respuesta" title="Mala respuesta"><svg class="ico ico-sm"><use href="#i-dislike"/></svg></button></div>`);
+        }
+      }, 28);
+    }, 700);
+  }
+
+  $$('[data-composer]').forEach(form => {
+    const ta = $('textarea', form), send = $('.send', form);
+    const sync = () => { send.disabled = !ta.value.trim(); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 200) + 'px'; };
+    ta.addEventListener('input', sync);
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); } });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const fresh = form.closest('#v-asistente') !== null;
+      const v = ta.value; ta.value = ''; sync(); ask(v, fresh);
+    });
+  });
+  $$('.src-toggle').forEach(b => b.addEventListener('click', () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
+
+  document.addEventListener('click', e => {
+    const s = e.target.closest('.sug'); if (s) { ask(s.dataset.q, true); return; }
+    const f = e.target.closest('.follow button'); if (f) { ask(f.dataset.q, false); return; }
+    const ag = e.target.closest('[data-agent]');
+    if (ag) {
+      $('[data-agent-name]').textContent = ag.dataset.agent;
+      $('[data-agent-tag]').classList.add('on');
+      $('#q1').placeholder = 'Pregúntale a ' + ag.dataset.agent.toLowerCase() + '…';
+      location.hash = '#asistente'; setTimeout(() => $('#q1').focus(), 50); return;
+    }
+    if (e.target.closest('[data-agent-clear]')) { $('[data-agent-tag]').classList.remove('on'); $('#q1').placeholder = 'Pregúntale al cerebro institucional…'; return; }
+    if (e.target.closest('[data-new]')) { $('[data-agent-tag]').classList.remove('on'); location.hash = '#asistente'; setTimeout(() => $('#q1').focus(), 50); return; }
+    const r = e.target.closest('.recent a');
+    if (r) {
+      $$('.recent a').forEach(x => x.classList.toggle('on', x === r));
+      thread.innerHTML = $('#tpl-thread').innerHTML;
+      currentTitle = r.textContent.toLowerCase();
+      if (location.hash === '#chat') route();
+    }
+  });
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('[data-new]').click(); } });
+
+  renderSources(); renderAgents(); route();
+})();
+</script>
+</body>
+</html>

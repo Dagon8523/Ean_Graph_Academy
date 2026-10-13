@@ -1,0 +1,106 @@
+
+def extract(ws):
+    # Tablas comparativas: varias unidades en la misma fila de nombres.
+    names = [(c.row, c.column) for row in ws for c in row
+             if field(c.value) == 'nombre_unidad_estudio']
+    if not names:
+        return None, 'sin_etiqueta_nombre'
+    r, col = names[0]
+    values = [c for c in ws[r] if c.column > col and c.value is not None and str(c.value).strip()
+              and not field(c.value)]
+    if len(values) > 1:
+        return None, 'tabla_comparativa_requiere_revision'
+    labels = []
+    for row in ws:
+        for c in row:
+            k = field(c.value)
+            if k:
+                labels.append((c.row, c.column, k, str(c.value)))
+    record, cells = {}, {}
+    labels.sort(key=lambda item: (bool(re.match(r"^\s*\d+\s*\.", item[3])), item[0], item[1]))
+    for r, col, k, raw in labels:
+        if k in record or k in MINOR or k == 'control_cambios':
+            continue
+        end = min([rr for rr, cc, kk, vv in labels
+                   if rr > r and kk not in MINOR] or [ws.max_row + 1]) - 1
+        # Encabezados numerados de secciones también delimitan bloques.
+        section_rows = [c.row for row in ws for c in row
+                        if c.row > r and isinstance(c.value, str)
+                        and re.match(r'^\s*\d+\s*\.\s+[A-Za-zÁÉÍÓÚáéíóú]', c.value)]
+        if section_rows:
+            end = min(end, min(section_rows) - 1)
+        right = min([cc for rr, cc, kk, vv in labels
+                     if rr == r and cc > col] or [ws.max_column + 1]) - 1
+        parts, refs = [], []
+        if ':' in raw and k.startswith('bibliografia'):
+            tail = raw.split(':', 1)[1].strip()
+            if tail:
+                parts.append(tail)
+                refs.append(ws.cell(r, col).coordinate)
+        candidates = [ws.cell(r, c) for c in range(col + 1, right + 1)]
+        if k in BLOCK:
+            candidates += [ws.cell(rr, cc) for rr in range(r + 1, end + 1)
+                           for cc in range(col, right + 1)]
+        for c in candidates:
+            if c.value is None or field(c.value):
+                continue
+            value = str(c.value).strip()
+            if value and value not in parts:
+                parts.append(value)
+                refs.append(c.coordinate)
+            if parts and k not in BLOCK:
+                break
+        record[k] = '\n'.join(parts) or None
+        cells[k] = refs
+    if not record.get('nombre_unidad_estudio') or not any(record.get(k) for k in ['descripcion_unidad', 'resultado_aprendizaje_unidad', 'contenidos_unidad']):
+        return None, 'formulario_incompleto'
+    # Separar criterios incrustados sin descartar su contenido.
+    value = record.get('resultado_aprendizaje_unidad')
+    if value:
+        match = re.search(r'(?im)^\s*criterios de evaluaci[oó]n\s*:', value)
+        if match:
+            record['criterios_evaluacion_integrados'] = value[match.end():].strip()
+            record['resultado_aprendizaje_unidad'] = value[:match.start()].strip() or None
+    if norm(record.get('descripcion_unidad')) in {'descripcion delcurso', 'descripcion del curso'}:
+        return None, 'plantilla_con_instrucciones'
+    record['requiere_revision_identidad'] = not bool(record.get('codigo_unidad_estudio'))
+    record['celdas_origen'] = cells
+    return record, None
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('root', type=Path)
+    ap.add_argument('--out', type=Path, required=True)
+    args = ap.parse_args()
+    if not args.root.is_dir():
+        ap.error('root debe ser una carpeta')
+    records, audit = [], []
+    for path in sorted(args.root.rglob('*.xlsx')):
+        if path.name.startswith('~$'):
+            continue
+        try:
+            wb = openpyxl.load_workbook(path, data_only=True)
+            for ws in wb:
+                rec, reason = extract(ws)
+                audit.append({'archivo': str(path), 'hoja': ws.title,
+                              'estado': reason or 'extraida'})
+                if rec:
+                    rec.update(file_path=str(path),
+                               folder_breadcrumb=str(path.parent.relative_to(args.root)),
+                               sheet_name=ws.title, sheet_type='unit_detail',
+                               extractor_version='syllabus_v2_1')
+                    records.append(rec)
+            wb.close()
+        except Exception as exc:
+            audit.append({'archivo': str(path), 'estado': 'error', 'detalle': str(exc)})
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding='utf-8')
+    audit_path = args.out.with_name(args.out.stem + '_auditoria.json')
+    audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(f'Registros extraídos: {len(records)}')
+    print(f'JSON: {args.out}')
+    print(f'Auditoría: {audit_path}')
+    print('No se modificó Neo4j. Revisar auditoría antes de sincronizar.')
+
+if __name__ == '__main__':
+    main()

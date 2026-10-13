@@ -1,0 +1,105 @@
+name: ruta-ean-cerebro-qa
+services:
+  neo4j:
+    image: neo4j:5.26.30-community
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER:?Definir usuario}/${NEO4J_PASSWORD:?Definir clave}
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 512m
+    volumes:
+    - neo4j_data:/data
+    - neo4j_logs:/logs
+    - neo4j_import:/var/lib/neo4j/import
+    networks:
+    - qa
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - cypher-shell -u "$${NEO4J_AUTH%%/*}" -p "$${NEO4J_AUTH#*/}" "RETURN 1" >/dev/null
+        || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+  api:
+    image: ruta-ean-cerebro-api:${QA_IMAGE_TAG:-qa-0.1.0}
+    build:
+      context: .
+      dockerfile: ops/docker/api.Dockerfile
+    restart: unless-stopped
+    env_file:
+    - .env.qa
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      OLLAMA_BASE_URL: http://ollama:11434
+      CHAT_PROVIDER: ollama
+      CHAT_SESSION_DB_PATH: /app/data/conversations.sqlite3
+    volumes:
+    - app_data:/app/data
+    networks:
+    - qa
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen("http://localhost:8001/health",
+        timeout=5)
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+  web:
+    image: ruta-ean-cerebro-web:${QA_IMAGE_TAG:-qa-0.1.0}
+    build:
+      context: .
+      dockerfile: ops/docker/web.Dockerfile
+    restart: unless-stopped
+    ports:
+    - 127.0.0.1:${QA_WEB_PORT:-8088}:8080
+    environment:
+      API_UPSTREAM: http://api:8001
+      APP_ENV: qa
+      USE_MOCKS: 'false'
+      REQUEST_TIMEOUT_MS: '120000'
+    networks:
+    - qa
+    depends_on:
+      api:
+        condition: service_healthy
+  ollama:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_NUM_PARALLEL: '1'
+      OLLAMA_MAX_LOADED_MODELS: '1'
+    volumes:
+    - ollama_models:/root/.ollama
+    networks:
+    - qa
+    healthcheck:
+      test:
+      - CMD
+      - ollama
+      - list
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+volumes:
+  neo4j_data: null
+  neo4j_logs: null
+  neo4j_import: null
+  app_data: null
+  ollama_models: null
+networks:
+  qa:
+    driver: bridge

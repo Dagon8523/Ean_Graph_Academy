@@ -1,0 +1,69 @@
+services:
+  neo4j:
+    image: neo4j:5.26.30-community
+    container_name: ruta-ean-cerebro-neo4j
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:${NEO4J_HTTP_PORT:-7476}:7474"
+      - "127.0.0.1:${NEO4J_BOLT_PORT:-7689}:7687"
+
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}"
+      NEO4J_server_default__listen__address: "0.0.0.0"
+      NEO4J_server_memory_heap_initial__size: "512m"
+      NEO4J_server_memory_heap_max__size: "1G"
+      NEO4J_server_memory_pagecache_size: "512m"
+
+    volumes:
+      - ruta-ean-cerebro-neo4j-data:/data
+      - ruta-ean-cerebro-neo4j-logs:/logs
+      - ruta-ean-cerebro-neo4j-import:/var/lib/neo4j/import
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "cypher-shell -u ${NEO4J_USER} -p ${NEO4J_PASSWORD} 'RETURN 1;' || exit 1"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+
+    networks:
+      - ruta-ean-cerebro-network
+
+  web:
+    build:
+      context: .
+      dockerfile: ops/docker/web.Dockerfile
+    image: cae-web:local
+    container_name: ruta-ean-cerebro-web
+    restart: unless-stopped
+
+    ports:
+      - "0.0.0.0:8080:8080"
+
+    environment:
+      API_UPSTREAM: "http://host.docker.internal:8001"
+      APP_ENV: "local"
+      REQUEST_TIMEOUT_MS: "120000"
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    networks:
+      - ruta-ean-cerebro-network
+
+volumes:
+  ruta-ean-cerebro-neo4j-data:
+    name: ruta-ean-cerebro-neo4j-data
+  ruta-ean-cerebro-neo4j-logs:
+    name: ruta-ean-cerebro-neo4j-logs
+  ruta-ean-cerebro-neo4j-import:
+    name: ruta-ean-cerebro-neo4j-import
+
+networks:
+  ruta-ean-cerebro-network:
+    name: ruta-ean-cerebro-network

@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Universidad EAN — Cerebro Académico </title>
+<script>document.documentElement.setAttribute("data-theme", matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Manrope: sustituto PROVISIONAL de Mikro (Black/Bold). Open Sans: tipografía complementaria oficial (incluye eje de ancho para el sello Vigilada). -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Open+Sans:wdth,wght@75..100,300..700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   1. TOKENS — Manual de marca Universidad EAN adaptado a interfaz
+   ===================================================================== */
+:root {
+  /* Primarios (manual p. 32) */
+  --verde: #3BAC52;        /* pantone 7738 C — acento principal, rellenos */
+  --negro: #000000;
+  --blanco: #FFFFFF;
+  /* Secundarios por segmento (manual p. 33) — solo identifican segmentos */
+  --seg-pregrado: #DFDF3F;
+  --seg-continuada: #00C0B3;
+  --seg-interna: #009579;
+  --seg-posgrado: #005E85;
+  --seg-intl: #533278;
+
+  /* Variantes AA para uso interactivo */
+  --verde-text: #267A38;   /* verde como texto o con texto blanco (5.35:1) */
+  --verde-soft: #EAF6ED;   /* fondos de acento */
+  --verde-ink: #000000;    /* texto sobre verde #3BAC52 (7.2:1) */
+
+  /* Neutros */
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #F5F6F5;
+  --surface-3: #ECEEEC;
+  --line: #E1E4E1;
+  --ink: #000000;
+  --ink-2: #22262B;
+  --muted: #5A626B;        /* 6.0:1 sobre blanco */
+  --focus: #267A38;
+  --inv-bg: #000000; --inv-ink: #FFFFFF; --inv-muted: #C9CDD1; --inv-line: #4A4F55;
+  --scrim: rgba(255,255,255,.9);
+
+  /* Estados */
+  --ok-text: #1F6B30;  --ok-bg: #EAF6ED;  --ok-line: #BFE3C7;  --ok-dot: #3BAC52;
+  --warn-text: #8A5200; --warn-bg: #FFF5E1; --warn-line: #F2D59B; --warn-dot: #E0A100;
+  --bad-text: #A3262C;  --bad-bg: #FDEDED;  --bad-line: #F3BDBF;  --bad-dot: #D64545;
+  --plan-text: #3D4654; --plan-bg: #EFF1F4; --plan-line: #C9CFD8; --plan-dot: #8A94A3;
+
+  /* Tipografía */
+  --f-title: "Manrope", "Mikro", system-ui, sans-serif;   /* provisional → Mikro Black / Bold */
+  --f-body: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Forma */
+  --r-card: 19px; --r-hero: 24px; --r-tile: 13px; --r-btn: 10px; --r-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05), 0 3px 10px rgba(0,0,0,.04);
+  --shadow: 0 8px 24px rgba(0,0,0,.07);
+  --shadow-lg: 0 18px 48px rgba(0,0,0,.12);
+  --cut: 18px;              /* esquina recortada de los contenedores del manual */
+}
+
+
+/* 1b. TOKENS — modo oscuro (sigue al sistema por defecto; botón para alternar) */
+html[data-theme="dark"] {
+  --verde-text: #5FCB76;           /* verde como texto sobre fondo oscuro (AA) */
+  --verde-soft: rgba(59,172,82,.16);
+  --bg: #0B0D0C; --surface: #141715; --surface-2: #1B1F1C; --surface-3: #252A26; --line: #2C322E;
+  --ink: #F3F5F3; --ink-2: #D2D8D3; --muted: #9DA69F; --focus: #5FCB76;
+  --inv-bg: #F3F5F3; --inv-ink: #000000; --inv-muted: #4A524C; --inv-line: #BFC5BF;
+  --scrim: rgba(11,13,12,.88);
+  --ok-text: #86E09E;  --ok-bg: rgba(59,172,82,.14);  --ok-line: rgba(59,172,82,.38);  --ok-dot: #4CC466;
+  --warn-text: #F6C96A; --warn-bg: rgba(242,181,58,.12); --warn-line: rgba(242,181,58,.36); --warn-dot: #F2B53A;
+  --bad-text: #FFA3A5;  --bad-bg: rgba(240,106,106,.13); --bad-line: rgba(240,106,106,.38); --bad-dot: #F06A6A;
+  --plan-text: #C5CCD5; --plan-bg: rgba(138,148,163,.14); --plan-line: rgba(138,148,163,.42); --plan-dot: #8A94A3;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4), 0 3px 10px rgba(0,0,0,.25);
+  --shadow: 0 8px 24px rgba(0,0,0,.4);
+  --shadow-lg: 0 18px 48px rgba(0,0,0,.55);
+  color-scheme: dark;
+}
+
+/* =====================================================================
+   2. BASE
+   ===================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #E9EBE9; transition: background-color .2s; color: var(--ink-2); font: 400 15px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { margin: 0; color: var(--ink); font-family: var(--f-title); letter-spacing: -0.03em; line-height: 1.15; text-transform: none; }
+h1 { font-weight: 800; } h2 { font-weight: 800; font-size: 30px; } h3 { font-weight: 700; font-size: 17px; }
+p { margin: 0; }
+a { color: var(--verde-text); }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+svg { flex: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ico { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ico-sm { width: 16px; height: 16px; }
+.kicker { display: block; font: 600 11px/1.3 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--verde-text); }
+.muted { color: var(--muted); }
+.tblock { flex: 1 1 0; min-width: 0; overflow: hidden; }
+.tblock > * { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Campo que llega desde la API (no es dato real) */
+.ph { font-style: italic; color: var(--muted); background: var(--surface-2); border-radius: 5px; padding: 0 5px; white-space: nowrap; }
+.ph::before { content: "‹"; } .ph::after { content: "›"; }
+h1 .ph, h2 .ph, h3 .ph { font-style: normal; color: var(--ink); background: linear-gradient(transparent 62%, var(--verde-soft) 62%); padding: 0 2px; }
+
+/* =====================================================================
+   3. CONTROLES DEL MOCKUP (fuera del producto)
+   ===================================================================== */
+.proto { background: #111; color: #fff; font: 500 12.5px/1.2 var(--f-body); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.proto b { font-weight: 700; letter-spacing: .02em; }
+.proto .grp { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.proto .lab { color: #B9BEC4; }
+.proto button { height: 28px; padding: 0 10px; border-radius: 8px; background: #262626; color: #EDEDED; font-size: 12px; font-weight: 600; }
+.proto button[aria-pressed="true"] { background: var(--verde); color: #000; }
+.proto .note { color: #B9BEC4; margin-left: auto; }
+
+/* Anotaciones de capacidad */
+.anno { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 7px; border-radius: 6px; background: #161616; color: #fff; font: 600 10.5px/1 var(--f-body); letter-spacing: .02em; white-space: nowrap; vertical-align: middle; }
+.anno::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
+.anno.conf::before { background: #5BD174; }
+.anno.dev::before { background: #F2B53A; }
+.anno.ext::before { background: #B79BE0; }
+body.no-anno .anno { display: none !important; }
+
+/* =====================================================================
+   4. ESCENARIO (escritorio / móvil) — el layout usa container queries
+   ===================================================================== */
+.stage { position: relative; container: app / inline-size; background: var(--bg); color: var(--ink-2); min-height: calc(100vh - 44px); }
+body.mobile .stage { width: 390px; height: 844px; min-height: 0; margin: 24px auto 40px; border-radius: 40px; overflow-y: auto; overflow-x: hidden; box-shadow: 0 0 0 10px #111, 0 30px 80px rgba(0,0,0,.35); scrollbar-width: none; }
+body.mobile .stage::-webkit-scrollbar { display: none; }
+@media (max-width: 700px) { body.mobile .stage { width: auto; height: auto; margin: 0; border-radius: 0; box-shadow: none; overflow: visible; } }
+
+.app { display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: inherit; }
+
+/* Sidebar */
+.side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 22px; padding: 24px 18px 18px; background: var(--surface-2); z-index: 20; }
+body.mobile .side { height: 844px; }
+.lockup { display: flex; align-items: center; gap: 10px; flex: none; color: var(--ink); text-decoration: none; padding: 4px 4px 4px 2px; }
+.lockup .logo { flex: none; height: 44px; width: auto; color: var(--ink); }
+.lockup .bar { flex: none; width: 1.5px; align-self: stretch; margin: 2px 0; background: var(--ink); }
+.lockup .prod { font: 700 16px/1 var(--f-title); letter-spacing: -0.035em; color: var(--ink); white-space: nowrap; transform: translateY(-3px); }
+.side .sym { display: none; width: 30px; height: auto; color: var(--ink); }
+.btn-new { justify-content: flex-start; width: 100%; flex: none; }
+.side > * { flex-shrink: 0; }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav a { position: relative; display: flex; align-items: center; gap: 12px; height: 42px; padding: 0 12px; border-radius: var(--r-btn); color: var(--ink-2); font: 500 14.5px/1 var(--f-body); text-decoration: none; }
+.nav a:hover { background: var(--surface-3); }
+.nav a[aria-current="page"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: var(--shadow-sm); }
+.nav a[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 4px; border-radius: 4px; background: var(--verde); }
+.nav .lbl { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-sec h4 { font: 600 11px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 12px 8px; }
+.side-sec .soon { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--r-btn); color: var(--muted); font-size: 13.5px; }
+.side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 14px; }
+.vigilada { font-family: var(--f-body); font-stretch: 75%; font-size: 14px; letter-spacing: -0.025em; text-transform: uppercase; color: var(--ink); white-space: nowrap; line-height: 1; }
+.vigilada .l { font-weight: 300; } .vigilada .b { font-weight: 700; }
+.side .vigilada { padding: 0 12px; }
+
+/* Main */
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 15; height: 64px; display: flex; align-items: center; gap: 10px; padding: 0 32px; background: var(--scrim); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--line); }
+.topbar .tblock .kicker { margin-bottom: 3px; }
+.topbar h1 { font-size: 20px; }
+.m-lockup { display: none; }
+.top-theme { flex: none; }
+.view { display: none; width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px 32px 40px; }
+.view.on { display: block; animation: fade .25s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.foot { margin-top: auto; padding: 18px 32px 22px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; font-size: 12.5px; color: var(--muted); box-shadow: 0 -1px 0 var(--line); }
+.foot .vigilada { display: none; }
+.mnav { display: none; }
+
+/* =====================================================================
+   5. COMPONENTES
+   ===================================================================== */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: var(--r-btn); font: 600 14px/1 var(--f-body); white-space: nowrap; text-decoration: none; transition: background-color .15s, box-shadow .15s, transform .1s; }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn-primary { background: var(--verde); color: var(--verde-ink); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: #34A04A; }
+.btn-dark { background: var(--inv-bg); color: var(--inv-ink); }
+.btn-ghost { background: var(--surface-2); color: var(--ink); }
+.btn-ghost:hover { background: var(--surface-3); }
+.btn-line { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn-line:hover { box-shadow: inset 0 0 0 1px #BFC5BF; }
+.btn:disabled { opacity: .55; }
+.btn-sm { height: 34px; padding: 0 12px; font-size: 13px; }
+.icon-btn { width: 40px; height: 40px; border-radius: var(--r-btn); display: inline-grid; place-items: center; color: var(--ink-2); }
+.icon-btn:hover { background: var(--surface-2); }
+
+.card { background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow), inset 0 0 0 1px var(--line); padding: 22px; min-width: 0; container-type: inline-size; }
+.tile { background: var(--surface-2); border-radius: var(--r-tile); padding: 14px 16px; min-width: 0; }
+
+/* Tipos de formación — color de segmento con texto AA */
+.type { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: var(--r-pill); font: 700 11.5px/1 var(--f-body); white-space: nowrap; }
+.type.ec { background: var(--seg-continuada); color: #000; }
+.type.prog { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.type.unit { background: var(--inv-bg); color: var(--inv-ink); }
+.type.pre { background: var(--seg-pregrado); color: #000; }
+.type.pos { background: var(--seg-posgrado); color: #fff; }
+.type.int { background: var(--seg-interna); color: #000; }
+.type.intl { background: var(--seg-intl); color: #fff; }
+.type.eanx, .type.emp { background: var(--surface); color: var(--plan-text); box-shadow: inset 0 0 0 1.5px var(--plan-line); }
+
+/* Estados: punto + texto, nunca solo color */
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 9px; border-radius: var(--r-pill); font: 600 12px/1.25 var(--f-body); white-space: nowrap; }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.chip.ok { color: var(--ok-text); background: var(--ok-bg); box-shadow: inset 0 0 0 1px var(--ok-line); } .chip.ok::before { background: var(--ok-dot); }
+.chip.warn { color: var(--warn-text); background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); } .chip.warn::before { background: var(--warn-dot); }
+.chip.bad { color: var(--bad-text); background: var(--bad-bg); box-shadow: inset 0 0 0 1px var(--bad-line); } .chip.bad::before { background: var(--bad-dot); }
+.chip.plan { color: var(--plan-text); background: var(--plan-bg); box-shadow: inset 0 0 0 1px var(--plan-line); } .chip.plan::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--plan-dot); }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 13px; background: var(--surface-2); width: fit-content; max-width: 100%; }
+.tab { height: 34px; padding: 0 14px; border-radius: var(--r-btn); font: 600 13.5px/1 var(--f-body); color: var(--muted); display: inline-flex; align-items: center; gap: 7px; }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+.callout { display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--r-tile); background: var(--surface-2); color: var(--ink-2); font-size: 14px; }
+.callout .ico { margin-top: 1px; color: var(--ink); }
+.callout.warn { background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.callout.warn .ico { color: var(--warn-text); }
+.callout.info { background: var(--verde-soft); }
+.callout.info .ico { color: var(--verde-text); }
+.callout b { color: var(--ink); }
+
+.hex.inv { background: var(--inv-bg); color: var(--inv-ink); } .hex.off { background: var(--surface-3); color: var(--muted); }
+.hex { width: 34px; height: 38px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); display: grid; place-items: center; font: 800 14px/1 var(--f-title); flex: none; }
+
+.page-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.page-head .tblock .kicker { margin-bottom: 8px; }
+.page-head .tblock p { margin-top: 8px; white-space: normal; color: var(--muted); max-width: 680px; }
+.section-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 30px 0 14px; }
+.section-title h3 { font-size: 19px; }
+
+/* =====================================================================
+   6. INICIO CONVERSACIONAL
+   ===================================================================== */
+.home { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.hero { position: relative; overflow: hidden; border-radius: var(--r-hero); background: var(--surface-2); padding: 40px 40px 34px; clip-path: polygon(0 0, calc(100% - 46px) 0, 100% 46px, 100% 100%, 0 100%); container: hero / inline-size; }
+/* El símbolo tiene su propia columna reservada: el texto nunca pasa por debajo */
+.hero .pattern { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); width: 156px; color: var(--verde); pointer-events: none; }
+.hero .kicker, .hero h2, .hero p { position: relative; margin-right: 216px; }
+.hero .kicker { margin-bottom: 12px; }
+.hero h2 { font-size: clamp(28px, 6.4cqi, 48px); max-width: 600px; }
+.hero p { margin-top: 12px; max-width: 540px; font-size: 16px; color: var(--ink-2); }
+@container hero (max-width: 640px) {
+  .hero .pattern { width: 80px; right: 18px; top: 22px; transform: none; }
+  .hero .kicker, .hero h2 { margin-right: 92px; }
+  .hero p { margin-right: 0; }
+}
+
+.composer { background: var(--surface); border-radius: var(--r-card); box-shadow: var(--shadow-lg), inset 0 0 0 1px var(--line); padding: 14px 14px 10px; container-type: inline-size; }
+.composer:focus-within { box-shadow: var(--shadow-lg), inset 0 0 0 2px var(--verde); }
+.composer textarea { display: block; width: 100%; min-height: 54px; max-height: 180px; resize: none; border: 0; outline: 0; background: transparent; color: var(--ink); font: 400 16px/1.5 var(--f-body); padding: 4px 6px; }
+.composer textarea::placeholder { color: var(--muted); }
+.c-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.task { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px; border-radius: var(--r-btn); background: var(--surface-2); font: 600 12.5px/1 var(--f-body); color: var(--ink-2); }
+.task[aria-pressed="true"] { background: var(--inv-bg); color: var(--inv-ink); }
+.send { margin-left: auto; width: 42px; height: 42px; border-radius: var(--r-btn); background: var(--verde); color: #000; display: grid; place-items: center; }
+.send:disabled { background: var(--surface-3); color: var(--muted); opacity: 1; }
+@container (max-width: 520px) { .task .lbl { display: none; } .task { padding: 0 9px; } }
+
+.sugs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.sug { text-align: left; display: flex; gap: 12px; align-items: flex-start; padding: 15px 16px; border-radius: var(--r-tile); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); transition: box-shadow .15s, transform .15s; min-width: 0; }
+.sug:hover:not(:disabled) { box-shadow: var(--shadow), inset 0 0 0 1px var(--verde); transform: translateY(-1px); }
+.sug .i { width: 34px; height: 34px; border-radius: 10px; background: var(--verde-soft); color: var(--verde-text); display: grid; place-items: center; flex: none; }
+.sug b { display: block; font-weight: 600; font-size: 14.5px; line-height: 1.35; }
+.sug small { display: block; margin-top: 6px; }
+.sug:disabled { background: var(--surface-2); box-shadow: none; }
+.sug:disabled .i { background: var(--surface-3); color: var(--muted); }
+.sug:disabled b { color: var(--muted); }
+.trust { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; justify-content: center; font-size: 13px; color: var(--muted); text-align: center; }
+
+/* =====================================================================
+   7. CONVERSACIÓN Y RESULTADOS
+   ===================================================================== */
+.conv { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 28px; align-items: start; }
+.thread { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.msg-u { align-self: flex-end; max-width: min(560px, 88%); background: var(--inv-bg); color: var(--inv-ink); padding: 12px 16px; border-radius: 19px 19px 6px 19px; font-size: 15px; }
+.msg-a { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
+.av { width: 34px; height: 34px; border-radius: 10px; background: var(--verde-soft); display: grid; place-items: center; }
+.av svg { width: 20px; color: var(--ink); }
+.ans { min-width: 0; display: flex; flex-direction: column; gap: 12px; font-size: 15px; }
+.ans .who { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 700 14px/1 var(--f-title); color: var(--ink); }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { height: 36px; padding: 0 14px; border-radius: var(--r-btn); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font: 600 13.5px/1 var(--f-body); color: var(--ink); }
+.choice:hover { box-shadow: inset 0 0 0 1.5px var(--verde); }
+.choice[aria-pressed="true"] { background: var(--verde-soft); box-shadow: inset 0 0 0 1.5px var(--verde-text); color: var(--ink); }
+.steps { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; color: var(--muted); }
+.steps span { display: flex; align-items: center; gap: 8px; }
+.steps .done { color: var(--ink-2); }
+.steps .done .ico { color: var(--verde-text); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px; border-radius: var(--r-tile); background: var(--surface-2); }
+.flt { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: var(--r-btn); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font: 600 13px/1 var(--f-body); color: var(--ink); }
+.flt[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.flt .k { color: var(--muted); font-weight: 500; }
+.flt .x { color: var(--muted); }
+
+.res-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.res-head h3 { font-size: 16px; }
+.results { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.rc { display: flex; flex-direction: column; gap: 12px; padding: 18px; }
+.rc-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rc h4 { font: 700 16.5px/1.3 var(--f-title); letter-spacing: -0.03em; color: var(--ink); }
+.attrs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.attr { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; min-width: 0; }
+.attr small { display: block; font-size: 11.5px; color: var(--muted); }
+.attr span { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.attr.miss { background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.attr.miss span { color: var(--warn-text); }
+@container (max-width: 330px) { .attrs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.why { font-size: 13.5px; color: var(--ink-2); }
+.why b { color: var(--ink); }
+.link-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; }
+.src { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.src .ico { color: var(--ink-2); }
+.rc-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 12px; box-shadow: 0 -1px 0 var(--line); }
+.cmp { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; margin-left: auto; }
+.cmp input { width: 17px; height: 17px; accent-color: #267A38; margin: 0; }
+
+.skel { background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%); background-size: 200% 100%; animation: sh 1.3s infinite linear; border-radius: 8px; }
+@keyframes sh { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.empty { text-align: center; padding: 34px 22px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.empty .big { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: var(--surface-2); color: var(--ink); }
+.empty.err .big { background: var(--bad-bg); color: var(--bad-text); }
+.empty p { max-width: 460px; color: var(--muted); }
+.empty .choices { justify-content: center; }
+
+.dock { position: sticky; bottom: 0; padding: 16px 0 14px; background: linear-gradient(to top, var(--bg) 75%, transparent); z-index: 6; }
+.dock-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+.aside { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 14px; }
+.aside .card { padding: 18px; }
+.aside h3 { font-size: 16px; margin: 6px 0 12px; }
+.mini-list { display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; }
+.mini-list .row { display: flex; align-items: center; gap: 10px; }
+.mini-list .row .tblock b { font-weight: 600; font-size: 13.5px; color: var(--ink); }
+.mini-list .row .tblock small { font-size: 12px; color: var(--muted); }
+.crit { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; }
+.crit div { display: flex; justify-content: space-between; gap: 10px; }
+.crit span:first-child { color: var(--muted); }
+.crit span:last-child { color: var(--ink); font-weight: 600; text-align: right; }
+
+/* Bandeja de comparación */
+.tray { position: sticky; bottom: 92px; z-index: 7; display: none; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 14px; background: var(--inv-bg); color: var(--inv-ink); box-shadow: var(--shadow-lg); max-width: 560px; margin: 0 auto; }
+.tray.on { display: flex; }
+.tray .tblock b { font-size: 14px; } .tray .tblock small { font-size: 12px; color: var(--inv-muted); }
+
+/* Modal */
+.modal { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,.42); }
+.modal.on { display: flex; }
+body.mobile .modal { position: absolute; inset: auto 0 auto 0; height: 844px; border-radius: 40px; }
+@media (max-width: 700px) { body.mobile .modal { position: fixed; inset: 0; height: auto; border-radius: 0; } }
+.sheet { width: min(860px, 100%); max-height: 88vh; overflow: auto; background: var(--surface); border-radius: var(--r-hero); box-shadow: var(--shadow-lg); padding: 24px; container-type: inline-size; }
+.sheet-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.cmp-grid { display: grid; grid-template-columns: 170px repeat(2, minmax(0, 1fr)); border-radius: var(--r-tile); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+.cmp-grid > div { padding: 11px 14px; font-size: 13.5px; box-shadow: 0 1px 0 var(--line); min-width: 0; }
+.cmp-grid .h { background: var(--surface-2); font-weight: 600; color: var(--muted); }
+.cmp-grid .c { color: var(--ink); }
+.cmp-grid .top { background: var(--surface-2); }
+@container (max-width: 560px) { .cmp-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .cmp-grid .h { grid-column: 1 / -1; } .cmp-grid .corner { display: none; } }
+.navmap { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.navmap .tile { display: flex; flex-direction: column; gap: 6px; background: var(--surface-2); }
+.navmap .tile b { font: 700 14px/1.2 var(--f-title); color: var(--ink); }
+.navmap .tile small { font-size: 12.5px; color: var(--muted); }
+@container (max-width: 700px) { .navmap { grid-template-columns: minmax(0, 1fr); } }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; font-size: 13px; color: var(--ink-2); }
+
+/* =====================================================================
+   8. DETALLE / CONEXIONES / GRAFO
+   ===================================================================== */
+.crumbs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+.crumbs a { color: var(--ink-2); text-decoration: none; font-weight: 600; }
+.crumbs a:hover { text-decoration: underline; }
+.detail { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 24px; align-items: start; }
+.d-head { display: flex; flex-direction: column; gap: 12px; padding: 26px; border-radius: var(--r-hero); background: var(--surface-2); clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%); }
+.d-head h2 { font-size: clamp(26px, 4cqi, 34px); }
+.d-head .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.agrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.agrid .tile small { display: block; font-size: 12px; color: var(--muted); }
+.agrid .tile span { display: block; margin-top: 4px; font-weight: 600; color: var(--ink); font-size: 14.5px; }
+.agrid .tile code { display: block; margin-top: 6px; font: 500 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); overflow-wrap: anywhere; }
+.agrid .tile.miss { background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.agrid .tile.miss span { color: var(--warn-text); }
+@container (max-width: 620px) { .agrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (max-width: 380px) { .agrid { grid-template-columns: minmax(0, 1fr); } }
+.units { display: flex; flex-direction: column; }
+.urow { display: flex; align-items: center; gap: 12px; padding: 13px 0; box-shadow: 0 1px 0 var(--line); flex-wrap: wrap; }
+.urow:last-child { box-shadow: none; }
+.urow .tblock b { font-weight: 600; color: var(--ink); font-size: 14.5px; }
+.urow .tblock small { font-size: 12.5px; color: var(--muted); }
+.urow .tblock { flex-basis: 200px; }
+
+.rels { display: flex; flex-direction: column; gap: 10px; }
+.rel { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; padding: 14px; border-radius: var(--r-tile); background: var(--surface-2); }
+.rel .node { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+.rel .node b { font-size: 13.5px; color: var(--ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rel .edge { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); text-align: center; min-width: 120px; }
+.rel .edge i { display: block; width: 100%; height: 0; border-top: 2px solid var(--ink); position: relative; }
+.rel .edge i::after { content: ""; position: absolute; right: -2px; top: -6px; border: 5px solid transparent; border-left: 7px solid var(--ink); }
+.rel.aff .edge i { border-top-style: dashed; border-color: var(--warn-dot); } .rel.aff .edge i::after { border-left-color: var(--warn-dot); }
+.rel.plan .edge i { border-top-style: dotted; border-color: var(--plan-dot); } .rel.plan .edge i::after { border-left-color: var(--plan-dot); }
+.rel .why { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+@container (max-width: 520px) {
+  .rel { grid-template-columns: minmax(0, 1fr); }
+  .rel .edge { flex-direction: row; justify-content: flex-start; min-width: 0; }
+  .rel .edge i { width: 2px; height: 26px; border-top: 0; border-left: 2px solid var(--ink); }
+  .rel .edge i::after { display: none; }
+  .rel.aff .edge i { border-left: 2px dashed var(--warn-dot); }
+  .rel.plan .edge i { border-left: 2px dotted var(--plan-dot); }
+}
+.graph { width: 100%; height: auto; display: block; background: var(--surface-2); border-radius: var(--r-tile); }
+.graph text { font-family: var(--f-body); font-size: 13px; font-weight: 600; }
+.graph .t-k { font-size: 11.5px; font-weight: 700; } .graph .t-ph { font-size: 13.5px; font-weight: 400; font-style: italic; } .graph .t-lab { font-size: 11.5px; }
+.graph .e-ok { stroke: var(--ink); stroke-width: 2.5; } .graph .m-ok { fill: var(--ink); }
+.graph .e-aff { stroke: #E0A100; stroke-width: 2.5; stroke-dasharray: 8 6; } .graph .m-aff { fill: #E0A100; }
+.graph .e-plan { stroke: var(--plan-dot); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
+.graph .lbl-bg { fill: var(--surface); }
+.graph .n-unit { fill: var(--inv-bg); } .graph .t-unit { fill: var(--inv-ink); }
+.graph .n-prog { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.graph .n-ec { fill: #00C0B3; } .graph .t-ec { fill: #000; }
+.graph .n-plan { fill: var(--surface); stroke: var(--plan-line); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.graph .t-ink { fill: var(--ink); } .graph .t-muted { fill: var(--muted); } .graph .t-lbl { fill: var(--ink-2); } .graph .t-plan { fill: var(--plan-text); } .graph .t-warn { fill: var(--warn-text); }
+.g-note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+
+/* =====================================================================
+   9. MI RUTA FORMATIVA
+   ===================================================================== */
+.route { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.goal .tblock { flex-basis: 260px; }
+.goal { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 18px 20px; border-radius: var(--r-card); background: var(--inv-bg); color: var(--inv-ink); margin-bottom: 18px; }
+.goal .tblock small { font-size: 12px; color: var(--inv-muted); } .goal .tblock b { white-space: normal; font: 700 18px/1.3 var(--f-title); letter-spacing: -0.03em; }
+.goal .btn-line { background: transparent; color: var(--inv-ink); box-shadow: inset 0 0 0 1px var(--inv-line); }
+.timeline { display: flex; flex-direction: column; }
+.stp { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 16px; }
+.stp .rail { display: flex; flex-direction: column; align-items: center; }
+.stp .rail::after { content: ""; flex: 1; width: 2px; background: var(--line); margin: 6px 0; }
+.stp:last-child .rail::after { display: none; }
+.stp .body { padding-bottom: 22px; min-width: 0; }
+.stp .card { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.stp .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.kind { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 6px; font: 700 11px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; }
+.kind.rec { background: var(--verde-soft); color: var(--verde-text); }
+.kind.req { background: var(--inv-bg); color: var(--inv-ink); }
+.conn { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -10px 0 18px; padding: 8px 12px; border-radius: 10px; font-size: 13px; background: var(--surface-2); color: var(--ink-2); }
+.stp.later .card { background: var(--surface-2); box-shadow: none; }
+.stp.later h4, .stp.later .why { color: var(--muted); }
+
+/* =====================================================================
+   10. FUENTES
+   ===================================================================== */
+.arch { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.arch .box { flex: 1 1 150px; min-width: 0; padding: 14px; border-radius: var(--r-tile); background: var(--surface-2); display: flex; flex-direction: column; gap: 4px; }
+.arch .box b { font: 700 14.5px/1.2 var(--f-title); color: var(--ink); }
+.arch .box small { font-size: 12.5px; color: var(--muted); }
+.arch .box.front { background: var(--inv-bg); } .arch .box.front b { color: var(--inv-ink); } .arch .box.front small { color: var(--inv-muted); }
+.arch .arr { display: grid; place-items: center; color: var(--muted); flex: 0 0 auto; }
+.srcs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.sc { display: flex; flex-direction: column; gap: 14px; }
+.sc-head { display: flex; align-items: flex-start; gap: 12px; }
+.sc-ic { width: 42px; height: 42px; border-radius: var(--r-tile); background: var(--surface-2); display: grid; place-items: center; color: var(--ink); flex: none; }
+.sc-head .tblock b { white-space: normal; font: 700 16px/1.3 var(--f-title); letter-spacing: -0.03em; color: var(--ink); }
+.sc-head .tblock small { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.dl { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 12px; font-size: 13.5px; }
+.dl dt { color: var(--muted); } .dl dd { margin: 0; color: var(--ink); min-width: 0; }
+.sc-foot { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-top: 12px; box-shadow: 0 -1px 0 var(--line); margin-top: auto; }
+@container (max-width: 340px) { .sc-head { flex-wrap: wrap; } .sc-head .chip { order: 3; } .dl { grid-template-columns: minmax(0, 1fr); gap: 2px; } .dl dd { margin-bottom: 8px; } }
+
+/* =====================================================================
+   11. RESPONSIVE (container queries sobre el escenario)
+   ===================================================================== */
+@container app (max-width: 1240px) {
+  .conv, .detail, .route { grid-template-columns: minmax(0, 1fr); }
+  .aside { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .detail > aside, .route > aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}
+@container app (max-width: 1100px) {
+  .app { grid-template-columns: 76px minmax(0, 1fr); }
+  .side { padding: 20px 12px; align-items: center; }
+  .lockup { display: none; } .side .sym { display: block; margin: 2px 0 4px; }
+  .btn-new .lbl, .nav .lbl, .side-sec, .side .vigilada, .nav .anno { display: none; }
+  .btn-new { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .nav a { width: 48px; justify-content: center; padding: 0; }
+  .nav a[aria-current="page"]::before { left: -12px; }
+  .foot .vigilada { display: inline-block; }
+}
+@container app (max-width: 760px) {
+  .app { display: block; }
+  .side { display: none; }
+  .topbar { height: auto; flex-wrap: wrap; padding: 12px 16px; gap: 10px; position: sticky; }
+  .m-lockup { display: flex; width: 100%; align-items: center; gap: 10px; }
+  .m-lockup .logo { height: 30px; width: auto; color: var(--ink); }
+  .m-lockup .bar { flex: none; width: 1.5px; height: 30px; background: #000; }
+  .m-lockup .prod { font: 700 15px/1 var(--f-title); letter-spacing: -0.035em; color: #000; transform: translateY(-2px); }
+  .m-lockup .icon-btn { margin-left: auto; }
+  .topbar > .tblock { flex-basis: 100%; }
+  .top-theme { display: none; }
+  .topbar .kicker { display: none; }
+  .topbar h1 { font-size: 18px; }
+  .mnav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: sticky; bottom: 0; z-index: 30; background: var(--scrim); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 -1px 0 var(--line); padding: 6px 6px 10px; }
+  .mnav a { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 10px; color: var(--muted); text-decoration: none; font: 600 10.5px/1.1 var(--f-body); min-width: 0; text-align: center; }
+  .mnav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mnav a[aria-current="page"] { color: var(--ink); background: var(--verde-soft); }
+  .view { padding: 18px 16px 28px; }
+  .foot { padding: 16px; }
+  h2 { font-size: 24px; }
+  .hero { padding: 26px 22px 24px; clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%); }
+  .sugs { grid-template-columns: minmax(0, 1fr); }
+  .msg-a { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .av { width: 28px; height: 28px; }
+  .aside, .detail > aside, .route > aside { grid-template-columns: minmax(0, 1fr); }
+  .dock { bottom: 64px; }
+  .tray { bottom: 150px; }
+  .stp { grid-template-columns: 30px minmax(0, 1fr); gap: 12px; }
+  .hex { width: 30px; height: 34px; font-size: 13px; }
+  .arch .arr { transform: rotate(90deg); width: 100%; }
+  .arch .box { flex-basis: 100%; }
+  .goal .btn { width: 100%; }
+}
+.sug small .chip { white-space: normal; max-width: 100%; }
+.sug > span:last-child { min-width: 0; }
+.d-head .chip, .page-head .chip { white-space: normal; max-width: 100%; }
+h1 .ph, h2 .ph, h3 .ph { white-space: normal; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ===================== SPRITE: logo oficial + íconos ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Logo Universidad EAN extraído en vectores del Manual de marca (p. 4). No modificar proporciones. -->
+    <symbol id="logo-ean" viewBox="0 0 858.84 337.95"><path fill="currentColor" d="M192.66 244.96C183.91 244.96 176.78 252.08 176.78 260.83C176.78 269.58 183.91 276.71 192.66 276.71C201.41 276.71 208.54 269.58 208.54 260.83C208.54 252.08 201.41 244.96 192.66 244.96M298.73 183.72C289.97 183.72 282.85 190.84 282.85 199.59C282.85 208.35 289.97 215.47 298.73 215.47C307.48 215.47 314.61 208.35 314.61 199.59C314.61 190.84 307.48 183.72 298.73 183.72M298.73 61.24C289.97 61.24 282.85 68.36 282.85 77.11C282.85 85.87 289.97 92.99 298.73 92.99C307.48 92.99 314.61 85.87 314.61 77.11C314.61 68.36 307.48 61.24 298.73 61.24M86.59 61.24C77.83 61.24 70.71 68.36 70.71 77.11C70.71 85.87 77.83 92.99 86.59 92.99C95.34 92.99 102.46 85.87 102.46 77.11C102.46 68.36 95.34 61.24 86.59 61.24M86.59 183.72C77.83 183.72 70.71 190.84 70.71 199.59C70.71 208.35 77.83 215.47 86.59 215.47C95.34 215.47 102.46 208.35 102.46 199.59C102.46 190.84 95.34 183.72 86.59 183.72M51.23 122.48C42.48 122.48 35.36 129.60 35.36 138.36C35.36 147.11 42.48 154.23 51.23 154.23C59.98 154.23 67.11 147.11 67.11 138.36C67.11 129.60 59.98 122.48 51.23 122.48M263.37 0.00C254.62 0.00 247.50 7.12 247.50 15.88C247.50 24.63 254.62 31.75 263.37 31.75C272.12 31.75 279.25 24.63 279.25 15.88C279.25 7.12 272.12 0.00 263.37 0.00M121.95 0.00C113.19 0.00 106.07 7.12 106.07 15.88C106.07 24.63 113.19 31.75 121.95 31.75C130.70 31.75 137.82 24.63 137.82 15.88C137.82 7.12 130.70 0.00 121.95 0.00M263.37 244.96C254.62 244.96 247.50 252.08 247.50 260.83C247.50 269.58 254.62 276.71 263.37 276.71C272.12 276.71 279.25 269.58 279.25 260.83C279.25 252.08 272.12 244.96 263.37 244.96M121.95 244.96C113.19 244.96 106.07 252.08 106.07 260.83C106.07 269.58 113.19 276.71 121.95 276.71C130.70 276.71 137.82 269.58 137.82 260.83C137.82 252.08 130.70 244.96 121.95 244.96M157.30 306.20C148.55 306.20 141.42 313.32 141.42 322.07C141.42 330.83 148.55 337.95 157.30 337.95C166.05 337.95 173.18 330.83 173.18 322.07C173.18 313.32 166.05 306.20 157.30 306.20M228.01 306.20C219.26 306.20 212.13 313.32 212.13 322.07C212.13 330.83 219.26 337.95 228.01 337.95C236.76 337.95 243.89 330.83 243.89 322.07C243.89 313.32 236.76 306.20 228.01 306.20M15.88 61.24C7.12 61.24 0.00 68.36 0.00 77.11C0.00 85.87 7.12 92.99 15.88 92.99C24.63 92.99 31.75 85.87 31.75 77.11C31.75 68.36 24.63 61.24 15.88 61.24M51.23 0.00C42.48 0.00 35.36 7.12 35.36 15.88C35.36 24.63 42.48 31.75 51.23 31.75C59.98 31.75 67.11 24.63 67.11 15.88C67.11 7.12 59.98 0.00 51.23 0.00M51.23 244.96C42.48 244.96 35.36 252.08 35.36 260.83C35.36 269.58 42.48 276.71 51.23 276.71C59.98 276.71 67.11 269.58 67.11 260.83C67.11 252.08 59.98 244.96 51.23 244.96M15.88 183.72C7.12 183.72 0.00 190.84 0.00 199.59C0.00 208.35 7.12 215.47 15.88 215.47C24.63 215.47 31.75 208.35 31.75 199.59C31.75 190.84 24.63 183.72 15.88 183.72M192.66 244.96C183.91 244.96 176.78 252.08 176.78 260.83C176.78 269.58 183.91 276.71 192.66 276.71C201.41 276.71 208.54 269.58 208.54 260.83C208.54 252.08 201.41 244.96 192.66 244.96M298.73 183.72C289.97 183.72 282.85 190.84 282.85 199.59C282.85 208.35 289.97 215.47 298.73 215.47C307.48 215.47 314.61 208.35 314.61 199.59C314.61 190.84 307.48 183.72 298.73 183.72M298.73 61.24C289.97 61.24 282.85 68.36 282.85 77.11C282.85 85.87 289.97 92.99 298.73 92.99C307.48 92.99 314.61 85.87 314.61 77.11C314.61 68.36 307.48 61.24 298.73 61.24M86.59 61.24C77.83 61.24 70.71 68.36 70.71 77.11C70.71 85.87 77.83 92.99 86.59 92.99C95.34 92.99 102.46 85.87 102.46 77.11C102.46 68.36 95.34 61.24 86.59 61.24M86.59 183.72C77.83 183.72 70.71 190.84 70.71 199.59C70.71 208.35 77.83 215.47 86.59 215.47C95.34 215.47 102.46 208.35 102.46 199.59C102.46 190.84 95.34 183.72 86.59 183.72M51.23 122.48C42.48 122.48 35.36 129.60 35.36 138.36C35.36 147.11 42.48 154.23 51.23 154.23C59.98 154.23 67.11 147.11 67.11 138.36C67.11 129.60 59.98 122.48 51.23 122.48M263.37 0.00C254.62 0.00 247.50 7.12 247.50 15.88C247.50 24.63 254.62 31.75 263.37 31.75C272.12 31.75 279.25 24.63 279.25 15.88C279.25 7.12 272.12 0.00 263.37 0.00M121.95 0.00C113.19 0.00 106.07 7.12 106.07 15.88C106.07 24.63 113.19 31.75 121.95 31.75C130.70 31.75 137.82 24.63 137.82 15.88C137.82 7.12 130.70 0.00 121.95 0.00M263.37 244.96C254.62 244.96 247.50 252.08 247.50 260.83C247.50 269.58 254.62 276.71 263.37 276.71C272.12 276.71 279.25 269.58 279.25 260.83C279.25 252.08 272.12 244.96 263.37 244.96M121.95 244.96C113.19 244.96 106.07 252.08 106.07 260.83C106.07 269.58 113.19 276.71 121.95 276.71C130.70 276.71 137.82 269.58 137.82 260.83C137.82 252.08 130.70 244.96 121.95 244.96M157.30 306.20C148.55 306.20 141.42 313.32 141.42 322.07C141.42 330.83 148.55 337.95 157.30 337.95C166.05 337.95 173.18 330.83 173.18 322.07C173.18 313.32 166.05 306.20 157.30 306.20M228.01 306.20C219.26 306.20 212.13 313.32 212.13 322.07C212.13 330.83 219.26 337.95 228.01 337.95C236.76 337.95 243.89 330.83 243.89 322.07C243.89 313.32 236.76 306.20 228.01 306.20M15.88 61.24C7.12 61.24 0.00 68.36 0.00 77.11C0.00 85.87 7.12 92.99 15.88 92.99C24.63 92.99 31.75 85.87 31.75 77.11C31.75 68.36 24.63 61.24 15.88 61.24M51.23 0.00C42.48 0.00 35.36 7.12 35.36 15.88C35.36 24.63 42.48 31.75 51.23 31.75C59.98 31.75 67.11 24.63 67.11 15.88C67.11 7.12 59.98 0.00 51.23 0.00M51.23 244.96C42.48 244.96 35.36 252.08 35.36 260.83C35.36 269.58 42.48 276.71 51.23 276.71C59.98 276.71 67.11 269.58 67.11 260.83C67.11 252.08 59.98 244.96 51.23 244.96M15.88 183.72C7.12 183.72 0.00 190.84 0.00 199.59C0.00 208.35 7.12 215.47 15.88 215.47C24.63 215.47 31.75 208.35 31.75 199.59C31.75 190.84 24.63 183.72 15.88 183.72M334.09 122.48C325.33 122.48 318.21 129.60 318.21 138.36C318.21 147.11 325.33 154.23 334.09 154.23C342.84 154.23 349.97 147.11 349.97 138.36C349.97 129.60 342.84 122.48 334.09 122.48M334.09 0.00C325.33 0.00 318.21 7.12 318.21 15.88C318.21 24.63 325.33 31.75 334.09 31.75C342.84 31.75 349.97 24.63 349.97 15.88C349.97 7.12 342.84 0.00 334.09 0.00M369.44 92.99C378.19 92.99 385.32 85.87 385.32 77.11C385.32 68.36 378.19 61.24 369.44 61.24C360.68 61.24 353.56 68.36 353.56 77.11C353.56 85.87 360.68 92.99 369.44 92.99M369.44 183.72C360.68 183.72 353.56 190.84 353.56 199.59C353.56 208.35 360.68 215.47 369.44 215.47C378.19 215.47 385.32 208.35 385.32 199.59C385.32 190.84 378.19 183.72 369.44 183.72M334.09 244.96C325.33 244.96 318.21 252.08 318.21 260.83C318.21 269.58 325.33 276.71 334.09 276.71C342.84 276.71 349.97 269.58 349.97 260.83C349.97 252.08 342.84 244.96 334.09 244.96M470.77 120.49L470.77 126.82L530.60 126.82L530.60 120.49C527.44 110.59 516.49 101.10 500.69 101.10C485.09 101.10 473.72 110.59 470.77 120.49M555.46 165.36C546.61 184.75 527.02 196.96 501.53 196.96C474.35 196.96 453.49 181.16 446.75 160.94L446.75 115.43C453.49 95.20 473.93 79.63 500.89 79.63C527.44 79.63 547.66 95.20 554.62 115.43L554.62 146.41L470.77 146.41L470.77 155.67C473.72 165.36 485.30 175.26 501.73 175.26C518.80 175.26 528.70 166.63 533.13 156.51L555.46 165.36M652.45 139.24C648.44 142.39 639.17 145.14 625.48 147.46C611.36 149.99 604.62 152.72 601.89 157.99L601.89 167.68C605.46 172.31 612.20 176.33 624.85 176.33C637.07 176.33 647.39 171.06 652.45 163.68L652.45 139.24M676.25 109.12L676.25 193.60L653.71 193.60L653.71 182.43C646.13 191.49 634.32 196.76 620.21 196.76C599.57 196.76 583.76 187.49 578.29 176.33L578.29 151.25C584.61 137.76 601.89 131.45 621.48 128.91C640.44 126.39 650.13 124.71 652.45 121.33L652.45 115.02C648.86 108.07 640.23 101.74 626.54 101.74C612.84 101.74 601.89 109.75 597.25 119.65L575.54 110.16C582.92 93.11 602.73 79.63 626.74 79.63C650.76 79.63 670.14 92.25 676.25 109.12M808.63 109.96L808.63 193.60L784.19 193.60L784.19 116.29C781.04 108.91 771.97 102.17 757.86 102.17C743.96 102.17 734.26 109.54 731.95 116.70L731.95 193.60L707.50 193.60L707.50 82.99L730.47 82.99L730.47 94.59C738.26 85.51 749.43 79.83 764.18 79.83C786.93 79.83 804.00 94.36 808.63 109.96M839.39 86.61L843.32 86.61C844.79 86.61 845.85 86.04 846.35 85.06L846.35 83.02C845.99 82.11 844.79 81.41 843.32 81.41L839.39 81.41L839.39 86.61M846.48 89.13L850.62 95.31L850.62 95.87L847.12 95.87L842.97 89.63L839.39 89.63L839.39 95.87L835.80 95.87L835.80 78.39L843.88 78.39C846.70 78.39 849.15 80.07 849.85 82.11L849.85 85.91C849.36 87.31 848.10 88.50 846.48 89.13M855.47 81.62C853.93 77.26 848.66 74.10 842.62 74.10C836.65 74.10 831.31 77.26 829.77 81.62L829.77 93.28C831.31 97.62 836.65 100.80 842.62 100.80C848.66 100.80 853.93 97.62 855.47 93.28L855.47 81.62M858.84 80.78L858.84 94.12C856.80 99.73 850.27 103.95 842.62 103.95C834.96 103.95 828.50 99.73 826.47 94.12L826.47 80.78C828.50 75.24 834.96 70.95 842.62 70.95C850.27 70.95 856.80 75.24 858.84 80.78M334.09 122.48C325.33 122.48 318.21 129.60 318.21 138.36C318.21 147.11 325.33 154.23 334.09 154.23C342.84 154.23 349.97 147.11 349.97 138.36C349.97 129.60 342.84 122.48 334.09 122.48M334.09 0.00C325.33 0.00 318.21 7.12 318.21 15.88C318.21 24.63 325.33 31.75 334.09 31.75C342.84 31.75 349.97 24.63 349.97 15.88C349.97 7.12 342.84 0.00 334.09 0.00M369.44 92.99C378.19 92.99 385.32 85.87 385.32 77.11C385.32 68.36 378.19 61.24 369.44 61.24C360.68 61.24 353.56 68.36 353.56 77.11C353.56 85.87 360.68 92.99 369.44 92.99M369.44 183.72C360.68 183.72 353.56 190.84 353.56 199.59C353.56 208.35 360.68 215.47 369.44 215.47C378.19 215.47 385.32 208.35 385.32 199.59C385.32 190.84 378.19 183.72 369.44 183.72M334.09 244.96C325.33 244.96 318.21 252.08 318.21 260.83C318.21 269.58 325.33 276.71 334.09 276.71C342.84 276.71 349.97 269.58 349.97 260.83C349.97 252.08 342.84 244.96 334.09 244.96M477.50 242.78L477.50 277.11L473.41 277.11L473.41 273.28C470.96 276.25 467.20 278.10 462.32 278.10C455.52 278.10 450.30 274.34 448.39 269.39L448.39 242.78L452.61 242.78L452.61 268.00C454.06 271.56 457.63 274.01 462.98 274.01C468.12 274.01 472.35 271.10 473.27 267.73L473.27 242.78L477.50 242.78M518.45 250.31L518.45 277.11L514.22 277.11L514.22 251.76C512.70 248.19 509.01 245.88 503.73 245.88C498.45 245.88 494.29 248.72 493.36 252.02L493.36 277.11L489.14 277.11L489.14 242.78L493.23 242.78L493.23 246.48C495.74 243.64 499.44 241.79 504.39 241.79C511.19 241.79 516.47 245.49 518.45 250.31M529.96 242.78h4.22v34.33h-4.22zM528.77 233.60L528.77 230.70C529.30 229.64 530.69 228.92 532.08 228.92C533.46 228.92 534.85 229.64 535.38 230.70L535.38 233.60C534.85 234.66 533.46 235.39 532.08 235.39C530.69 235.39 529.30 234.66 528.77 233.60M573.81 242.78L573.81 243.97L560.41 277.11L555.45 277.11L542.12 243.97L542.12 242.78L546.15 242.78L558.03 272.68L569.85 242.78L573.81 242.78M583.79 254.33L583.79 257.11L607.36 257.11L607.36 254.33C606.24 249.58 601.42 245.82 595.61 245.82C589.80 245.82 584.85 249.58 583.79 254.33M611.78 268.20C609.14 274.20 603.27 278.10 595.87 278.10C588.08 278.10 581.48 273.22 579.56 266.75L579.56 253.08C581.41 246.61 587.82 241.79 595.61 241.79C603.33 241.79 609.67 246.61 611.58 253.08L611.58 260.80L583.79 260.80L583.79 265.49C584.98 270.25 590.00 274.01 595.87 274.01C601.81 274.01 605.90 270.90 607.75 266.35L611.78 268.20M638.02 242.78L638.02 246.81L635.84 246.81C629.77 246.81 626.47 250.44 625.74 253.28L625.74 277.11L621.51 277.11L621.51 242.78L625.61 242.78L625.61 247.99C627.26 245.03 630.62 242.45 635.31 242.45C636.17 242.45 637.23 242.52 638.02 242.78M642.72 270.18L646.42 268.26C648.00 271.70 651.76 274.07 656.38 274.07C660.74 274.07 663.91 272.22 665.03 269.58L665.03 266.28C664.37 264.57 662.52 263.38 660.21 262.59C656.85 261.46 654.53 261.73 650.71 260.54C646.88 259.35 644.43 257.11 643.51 254.40L643.51 249.05C644.96 244.89 650.11 241.79 656.18 241.79C662.39 241.79 667.67 245.09 669.39 249.58L665.63 251.43C663.91 247.93 660.74 245.82 656.05 245.82C651.83 245.82 648.66 247.60 647.67 250.17L647.67 253.21C648.33 255.06 650.05 256.12 652.36 256.91C655.72 258.03 658.17 257.77 662.00 258.95C665.63 260.08 668.20 262.39 669.19 265.16L669.19 270.84C667.61 274.93 662.52 278.10 656.38 278.10C650.05 278.10 644.43 274.73 642.72 270.18M678.98 242.78h4.22v34.33h-4.22zM677.79 233.60L677.79 230.70C678.32 229.64 679.71 228.92 681.09 228.92C682.48 228.92 683.87 229.64 684.40 230.70L684.40 233.60C683.87 234.66 682.48 235.39 681.09 235.39C679.71 235.39 678.32 234.66 677.79 233.60M721.64 252.55C719.66 248.66 715.10 245.88 709.75 245.88C703.75 245.88 698.80 249.65 697.61 254.40L697.61 265.49C698.80 270.24 703.75 274.01 709.75 274.01C715.10 274.01 719.66 271.23 721.64 267.34L721.64 252.55M725.86 228.92L725.86 277.11L721.77 277.11L721.77 272.62C719.00 275.92 714.71 278.10 709.43 278.10C701.70 278.10 695.30 273.22 693.38 266.74L693.38 253.08C695.30 246.61 701.70 241.79 709.43 241.79C714.64 241.79 718.86 243.90 721.64 247.14L721.64 228.92L725.86 228.92M760.88 258.30C759.76 259.42 756.85 260.21 750.78 261.07C744.97 261.86 741.80 263.38 740.54 265.82L740.54 270.11C741.93 272.16 744.70 274.07 749.92 274.07C754.94 274.07 759.03 271.83 760.88 268.66L760.88 258.30M765.10 250.44L765.10 277.11L761.01 277.11L761.01 273.22C758.24 276.32 754.14 278.03 749.52 278.03C743.25 278.03 738.37 275.33 736.39 271.63L736.39 264.37C738.30 260.08 743.78 258.16 749.98 257.37C756.26 256.51 760.02 255.92 760.88 254.60L760.88 251.76C759.56 248.59 755.93 245.88 750.64 245.88C745.56 245.88 741.01 248.92 739.35 253.08L735.59 251.16C737.84 245.88 743.78 241.79 750.64 241.79C757.71 241.79 763.19 245.75 765.10 250.44M803.15 252.55C801.17 248.66 796.61 245.88 791.27 245.88C785.26 245.88 780.31 249.65 779.12 254.40L779.12 265.49C780.31 270.24 785.26 274.01 791.27 274.01C796.61 274.01 801.17 271.23 803.15 267.34L803.15 252.55M807.37 228.92L807.37 277.11L803.28 277.11L803.28 272.62C800.51 275.92 796.22 278.10 790.94 278.10C783.21 278.10 776.81 273.22 774.89 266.74L774.89 253.08C776.81 246.61 783.21 241.79 790.94 241.79C796.15 241.79 800.38 243.90 803.15 247.14L803.15 228.92L807.37 228.92"/></symbol>
+    <!-- Símbolo: mismo trazado del logo, recortado al área del círculo de puntos -->
+    <symbol id="sym-ean" viewBox="0 0 386 337.95"><path fill="currentColor" d="M192.66 244.96C183.91 244.96 176.78 252.08 176.78 260.83C176.78 269.58 183.91 276.71 192.66 276.71C201.41 276.71 208.54 269.58 208.54 260.83C208.54 252.08 201.41 244.96 192.66 244.96M298.73 183.72C289.97 183.72 282.85 190.84 282.85 199.59C282.85 208.35 289.97 215.47 298.73 215.47C307.48 215.47 314.61 208.35 314.61 199.59C314.61 190.84 307.48 183.72 298.73 183.72M298.73 61.24C289.97 61.24 282.85 68.36 282.85 77.11C282.85 85.87 289.97 92.99 298.73 92.99C307.48 92.99 314.61 85.87 314.61 77.11C314.61 68.36 307.48 61.24 298.73 61.24M86.59 61.24C77.83 61.24 70.71 68.36 70.71 77.11C70.71 85.87 77.83 92.99 86.59 92.99C95.34 92.99 102.46 85.87 102.46 77.11C102.46 68.36 95.34 61.24 86.59 61.24M86.59 183.72C77.83 183.72 70.71 190.84 70.71 199.59C70.71 208.35 77.83 215.47 86.59 215.47C95.34 215.47 102.46 208.35 102.46 199.59C102.46 190.84 95.34 183.72 86.59 183.72M51.23 122.48C42.48 122.48 35.36 129.60 35.36 138.36C35.36 147.11 42.48 154.23 51.23 154.23C59.98 154.23 67.11 147.11 67.11 138.36C67.11 129.60 59.98 122.48 51.23 122.48M263.37 0.00C254.62 0.00 247.50 7.12 247.50 15.88C247.50 24.63 254.62 31.75 263.37 31.75C272.12 31.75 279.25 24.63 279.25 15.88C279.25 7.12 272.12 0.00 263.37 0.00M121.95 0.00C113.19 0.00 106.07 7.12 106.07 15.88C106.07 24.63 113.19 31.75 121.95 31.75C130.70 31.75 137.82 24.63 137.82 15.88C137.82 7.12 130.70 0.00 121.95 0.00M263.37 244.96C254.62 244.96 247.50 252.08 247.50 260.83C247.50 269.58 254.62 276.71 263.37 276.71C272.12 276.71 279.25 269.58 279.25 260.83C279.25 252.08 272.12 244.96 263.37 244.96M121.95 244.96C113.19 244.96 106.07 252.08 106.07 260.83C106.07 269.58 113.19 276.71 121.95 276.71C130.70 276.71 137.82 269.58 137.82 260.83C137.82 252.08 130.70 244.96 121.95 244.96M157.30 306.20C148.55 306.20 141.42 313.32 141.42 322.07C141.42 330.83 148.55 337.95 157.30 337.95C166.05 337.95 173.18 330.83 173.18 322.07C173.18 313.32 166.05 306.20 157.30 306.20M228.01 306.20C219.26 306.20 212.13 313.32 212.13 322.07C212.13 330.83 219.26 337.95 228.01 337.95C236.76 337.95 243.89 330.83 243.89 322.07C243.89 313.32 236.76 306.20 228.01 306.20M15.88 61.24C7.12 61.24 0.00 68.36 0.00 77.11C0.00 85.87 7.12 92.99 15.88 92.99C24.63 92.99 31.75 85.87 31.75 77.11C31.75 68.36 24.63 61.24 15.88 61.24M51.23 0.00C42.48 0.00 35.36 7.12 35.36 15.88C35.36 24.63 42.48 31.75 51.23 31.75C59.98 31.75 67.11 24.63 67.11 15.88C67.11 7.12 59.98 0.00 51.23 0.00M51.23 244.96C42.48 244.96 35.36 252.08 35.36 260.83C35.36 269.58 42.48 276.71 51.23 276.71C59.98 276.71 67.11 269.58 67.11 260.83C67.11 252.08 59.98 244.96 51.23 244.96M15.88 183.72C7.12 183.72 0.00 190.84 0.00 199.59C0.00 208.35 7.12 215.47 15.88 215.47C24.63 215.47 31.75 208.35 31.75 199.59C31.75 190.84 24.63 183.72 15.88 183.72M192.66 244.96C183.91 244.96 176.78 252.08 176.78 260.83C176.78 269.58 183.91 276.71 192.66 276.71C201.41 276.71 208.54 269.58 208.54 260.83C208.54 252.08 201.41 244.96 192.66 244.96M298.73 183.72C289.97 183.72 282.85 190.84 282.85 199.59C282.85 208.35 289.97 215.47 298.73 215.47C307.48 215.47 314.61 208.35 314.61 199.59C314.61 190.84 307.48 183.72 298.73 183.72M298.73 61.24C289.97 61.24 282.85 68.36 282.85 77.11C282.85 85.87 289.97 92.99 298.73 92.99C307.48 92.99 314.61 85.87 314.61 77.11C314.61 68.36 307.48 61.24 298.73 61.24M86.59 61.24C77.83 61.24 70.71 68.36 70.71 77.11C70.71 85.87 77.83 92.99 86.59 92.99C95.34 92.99 102.46 85.87 102.46 77.11C102.46 68.36 95.34 61.24 86.59 61.24M86.59 183.72C77.83 183.72 70.71 190.84 70.71 199.59C70.71 208.35 77.83 215.47 86.59 215.47C95.34 215.47 102.46 208.35 102.46 199.59C102.46 190.84 95.34 183.72 86.59 183.72M51.23 122.48C42.48 122.48 35.36 129.60 35.36 138.36C35.36 147.11 42.48 154.23 51.23 154.23C59.98 154.23 67.11 147.11 67.11 138.36C67.11 129.60 59.98 122.48 51.23 122.48M263.37 0.00C254.62 0.00 247.50 7.12 247.50 15.88C247.50 24.63 254.62 31.75 263.37 31.75C272.12 31.75 279.25 24.63 279.25 15.88C279.25 7.12 272.12 0.00 263.37 0.00M121.95 0.00C113.19 0.00 106.07 7.12 106.07 15.88C106.07 24.63 113.19 31.75 121.95 31.75C130.70 31.75 137.82 24.63 137.82 15.88C137.82 7.12 130.70 0.00 121.95 0.00M263.37 244.96C254.62 244.96 247.50 252.08 247.50 260.83C247.50 269.58 254.62 276.71 263.37 276.71C272.12 276.71 279.25 269.58 279.25 260.83C279.25 252.08 272.12 244.96 263.37 244.96M121.95 244.96C113.19 244.96 106.07 252.08 106.07 260.83C106.07 269.58 113.19 276.71 121.95 276.71C130.70 276.71 137.82 269.58 137.82 260.83C137.82 252.08 130.70 244.96 121.95 244.96M157.30 306.20C148.55 306.20 141.42 313.32 141.42 322.07C141.42 330.83 148.55 337.95 157.30 337.95C166.05 337.95 173.18 330.83 173.18 322.07C173.18 313.32 166.05 306.20 157.30 306.20M228.01 306.20C219.26 306.20 212.13 313.32 212.13 322.07C212.13 330.83 219.26 337.95 228.01 337.95C236.76 337.95 243.89 330.83 243.89 322.07C243.89 313.32 236.76 306.20 228.01 306.20M15.88 61.24C7.12 61.24 0.00 68.36 0.00 77.11C0.00 85.87 7.12 92.99 15.88 92.99C24.63 92.99 31.75 85.87 31.75 77.11C31.75 68.36 24.63 61.24 15.88 61.24M51.23 0.00C42.48 0.00 35.36 7.12 35.36 15.88C35.36 24.63 42.48 31.75 51.23 31.75C59.98 31.75 67.11 24.63 67.11 15.88C67.11 7.12 59.98 0.00 51.23 0.00M51.23 244.96C42.48 244.96 35.36 252.08 35.36 260.83C35.36 269.58 42.48 276.71 51.23 276.71C59.98 276.71 67.11 269.58 67.11 260.83C67.11 252.08 59.98 244.96 51.23 244.96M15.88 183.72C7.12 183.72 0.00 190.84 0.00 199.59C0.00 208.35 7.12 215.47 15.88 215.47C24.63 215.47 31.75 208.35 31.75 199.59C31.75 190.84 24.63 183.72 15.88 183.72M334.09 122.48C325.33 122.48 318.21 129.60 318.21 138.36C318.21 147.11 325.33 154.23 334.09 154.23C342.84 154.23 349.97 147.11 349.97 138.36C349.97 129.60 342.84 122.48 334.09 122.48M334.09 0.00C325.33 0.00 318.21 7.12 318.21 15.88C318.21 24.63 325.33 31.75 334.09 31.75C342.84 31.75 349.97 24.63 349.97 15.88C349.97 7.12 342.84 0.00 334.09 0.00M369.44 92.99C378.19 92.99 385.32 85.87 385.32 77.11C385.32 68.36 378.19 61.24 369.44 61.24C360.68 61.24 353.56 68.36 353.56 77.11C353.56 85.87 360.68 92.99 369.44 92.99M369.44 183.72C360.68 183.72 353.56 190.84 353.56 199.59C353.56 208.35 360.68 215.47 369.44 215.47C378.19 215.47 385.32 208.35 385.32 199.59C385.32 190.84 378.19 183.72 369.44 183.72M334.09 244.96C325.33 244.96 318.21 252.08 318.21 260.83C318.21 269.58 325.33 276.71 334.09 276.71C342.84 276.71 349.97 269.58 349.97 260.83C349.97 252.08 342.84 244.96 334.09 244.96M470.77 120.49L470.77 126.82L530.60 126.82L530.60 120.49C527.44 110.59 516.49 101.10 500.69 101.10C485.09 101.10 473.72 110.59 470.77 120.49M555.46 165.36C546.61 184.75 527.02 196.96 501.53 196.96C474.35 196.96 453.49 181.16 446.75 160.94L446.75 115.43C453.49 95.20 473.93 79.63 500.89 79.63C527.44 79.63 547.66 95.20 554.62 115.43L554.62 146.41L470.77 146.41L470.77 155.67C473.72 165.36 485.30 175.26 501.73 175.26C518.80 175.26 528.70 166.63 533.13 156.51L555.46 165.36M652.45 139.24C648.44 142.39 639.17 145.14 625.48 147.46C611.36 149.99 604.62 152.72 601.89 157.99L601.89 167.68C605.46 172.31 612.20 176.33 624.85 176.33C637.07 176.33 647.39 171.06 652.45 163.68L652.45 139.24M676.25 109.12L676.25 193.60L653.71 193.60L653.71 182.43C646.13 191.49 634.32 196.76 620.21 196.76C599.57 196.76 583.76 187.49 578.29 176.33L578.29 151.25C584.61 137.76 601.89 131.45 621.48 128.91C640.44 126.39 650.13 124.71 652.45 121.33L652.45 115.02C648.86 108.07 640.23 101.74 626.54 101.74C612.84 101.74 601.89 109.75 597.25 119.65L575.54 110.16C582.92 93.11 602.73 79.63 626.74 79.63C650.76 79.63 670.14 92.25 676.25 109.12M808.63 109.96L808.63 193.60L784.19 193.60L784.19 116.29C781.04 108.91 771.97 102.17 757.86 102.17C743.96 102.17 734.26 109.54 731.95 116.70L731.95 193.60L707.50 193.60L707.50 82.99L730.47 82.99L730.47 94.59C738.26 85.51 749.43 79.83 764.18 79.83C786.93 79.83 804.00 94.36 808.63 109.96M839.39 86.61L843.32 86.61C844.79 86.61 845.85 86.04 846.35 85.06L846.35 83.02C845.99 82.11 844.79 81.41 843.32 81.41L839.39 81.41L839.39 86.61M846.48 89.13L850.62 95.31L850.62 95.87L847.12 95.87L842.97 89.63L839.39 89.63L839.39 95.87L835.80 95.87L835.80 78.39L843.88 78.39C846.70 78.39 849.15 80.07 849.85 82.11L849.85 85.91C849.36 87.31 848.10 88.50 846.48 89.13M855.47 81.62C853.93 77.26 848.66 74.10 842.62 74.10C836.65 74.10 831.31 77.26 829.77 81.62L829.77 93.28C831.31 97.62 836.65 100.80 842.62 100.80C848.66 100.80 853.93 97.62 855.47 93.28L855.47 81.62M858.84 80.78L858.84 94.12C856.80 99.73 850.27 103.95 842.62 103.95C834.96 103.95 828.50 99.73 826.47 94.12L826.47 80.78C828.50 75.24 834.96 70.95 842.62 70.95C850.27 70.95 856.80 75.24 858.84 80.78M334.09 122.48C325.33 122.48 318.21 129.60 318.21 138.36C318.21 147.11 325.33 154.23 334.09 154.23C342.84 154.23 349.97 147.11 349.97 138.36C349.97 129.60 342.84 122.48 334.09 122.48M334.09 0.00C325.33 0.00 318.21 7.12 318.21 15.88C318.21 24.63 325.33 31.75 334.09 31.75C342.84 31.75 349.97 24.63 349.97 15.88C349.97 7.12 342.84 0.00 334.09 0.00M369.44 92.99C378.19 92.99 385.32 85.87 385.32 77.11C385.32 68.36 378.19 61.24 369.44 61.24C360.68 61.24 353.56 68.36 353.56 77.11C353.56 85.87 360.68 92.99 369.44 92.99M369.44 183.72C360.68 183.72 353.56 190.84 353.56 199.59C353.56 208.35 360.68 215.47 369.44 215.47C378.19 215.47 385.32 208.35 385.32 199.59C385.32 190.84 378.19 183.72 369.44 183.72M334.09 244.96C325.33 244.96 318.21 252.08 318.21 260.83C318.21 269.58 325.33 276.71 334.09 276.71C342.84 276.71 349.97 269.58 349.97 260.83C349.97 252.08 342.84 244.96 334.09 244.96M477.50 242.78L477.50 277.11L473.41 277.11L473.41 273.28C470.96 276.25 467.20 278.10 462.32 278.10C455.52 278.10 450.30 274.34 448.39 269.39L448.39 242.78L452.61 242.78L452.61 268.00C454.06 271.56 457.63 274.01 462.98 274.01C468.12 274.01 472.35 271.10 473.27 267.73L473.27 242.78L477.50 242.78M518.45 250.31L518.45 277.11L514.22 277.11L514.22 251.76C512.70 248.19 509.01 245.88 503.73 245.88C498.45 245.88 494.29 248.72 493.36 252.02L493.36 277.11L489.14 277.11L489.14 242.78L493.23 242.78L493.23 246.48C495.74 243.64 499.44 241.79 504.39 241.79C511.19 241.79 516.47 245.49 518.45 250.31M529.96 242.78h4.22v34.33h-4.22zM528.77 233.60L528.77 230.70C529.30 229.64 530.69 228.92 532.08 228.92C533.46 228.92 534.85 229.64 535.38 230.70L535.38 233.60C534.85 234.66 533.46 235.39 532.08 235.39C530.69 235.39 529.30 234.66 528.77 233.60M573.81 242.78L573.81 243.97L560.41 277.11L555.45 277.11L542.12 243.97L542.12 242.78L546.15 242.78L558.03 272.68L569.85 242.78L573.81 242.78M583.79 254.33L583.79 257.11L607.36 257.11L607.36 254.33C606.24 249.58 601.42 245.82 595.61 245.82C589.80 245.82 584.85 249.58 583.79 254.33M611.78 268.20C609.14 274.20 603.27 278.10 595.87 278.10C588.08 278.10 581.48 273.22 579.56 266.75L579.56 253.08C581.41 246.61 587.82 241.79 595.61 241.79C603.33 241.79 609.67 246.61 611.58 253.08L611.58 260.80L583.79 260.80L583.79 265.49C584.98 270.25 590.00 274.01 595.87 274.01C601.81 274.01 605.90 270.90 607.75 266.35L611.78 268.20M638.02 242.78L638.02 246.81L635.84 246.81C629.77 246.81 626.47 250.44 625.74 253.28L625.74 277.11L621.51 277.11L621.51 242.78L625.61 242.78L625.61 247.99C627.26 245.03 630.62 242.45 635.31 242.45C636.17 242.45 637.23 242.52 638.02 242.78M642.72 270.18L646.42 268.26C648.00 271.70 651.76 274.07 656.38 274.07C660.74 274.07 663.91 272.22 665.03 269.58L665.03 266.28C664.37 264.57 662.52 263.38 660.21 262.59C656.85 261.46 654.53 261.73 650.71 260.54C646.88 259.35 644.43 257.11 643.51 254.40L643.51 249.05C644.96 244.89 650.11 241.79 656.18 241.79C662.39 241.79 667.67 245.09 669.39 249.58L665.63 251.43C663.91 247.93 660.74 245.82 656.05 245.82C651.83 245.82 648.66 247.60 647.67 250.17L647.67 253.21C648.33 255.06 650.05 256.12 652.36 256.91C655.72 258.03 658.17 257.77 662.00 258.95C665.63 260.08 668.20 262.39 669.19 265.16L669.19 270.84C667.61 274.93 662.52 278.10 656.38 278.10C650.05 278.10 644.43 274.73 642.72 270.18M678.98 242.78h4.22v34.33h-4.22zM677.79 233.60L677.79 230.70C678.32 229.64 679.71 228.92 681.09 228.92C682.48 228.92 683.87 229.64 684.40 230.70L684.40 233.60C683.87 234.66 682.48 235.39 681.09 235.39C679.71 235.39 678.32 234.66 677.79 233.60M721.64 252.55C719.66 248.66 715.10 245.88 709.75 245.88C703.75 245.88 698.80 249.65 697.61 254.40L697.61 265.49C698.80 270.24 703.75 274.01 709.75 274.01C715.10 274.01 719.66 271.23 721.64 267.34L721.64 252.55M725.86 228.92L725.86 277.11L721.77 277.11L721.77 272.62C719.00 275.92 714.71 278.10 709.43 278.10C701.70 278.10 695.30 273.22 693.38 266.74L693.38 253.08C695.30 246.61 701.70 241.79 709.43 241.79C714.64 241.79 718.86 243.90 721.64 247.14L721.64 228.92L725.86 228.92M760.88 258.30C759.76 259.42 756.85 260.21 750.78 261.07C744.97 261.86 741.80 263.38 740.54 265.82L740.54 270.11C741.93 272.16 744.70 274.07 749.92 274.07C754.94 274.07 759.03 271.83 760.88 268.66L760.88 258.30M765.10 250.44L765.10 277.11L761.01 277.11L761.01 273.22C758.24 276.32 754.14 278.03 749.52 278.03C743.25 278.03 738.37 275.33 736.39 271.63L736.39 264.37C738.30 260.08 743.78 258.16 749.98 257.37C756.26 256.51 760.02 255.92 760.88 254.60L760.88 251.76C759.56 248.59 755.93 245.88 750.64 245.88C745.56 245.88 741.01 248.92 739.35 253.08L735.59 251.16C737.84 245.88 743.78 241.79 750.64 241.79C757.71 241.79 763.19 245.75 765.10 250.44M803.15 252.55C801.17 248.66 796.61 245.88 791.27 245.88C785.26 245.88 780.31 249.65 779.12 254.40L779.12 265.49C780.31 270.24 785.26 274.01 791.27 274.01C796.61 274.01 801.17 271.23 803.15 267.34L803.15 252.55M807.37 228.92L807.37 277.11L803.28 277.11L803.28 272.62C800.51 275.92 796.22 278.10 790.94 278.10C783.21 278.10 776.81 273.22 774.89 266.74L774.89 253.08C776.81 246.61 783.21 241.79 790.94 241.79C796.15 241.79 800.38 243.90 803.15 247.14L803.15 228.92L807.37 228.92"/></symbol>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="m-ok" d="M0 0 10 5 0 10z"/></marker>
+                <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="m-aff" d="M0 0 10 5 0 10z"/></marker>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H16a3.5 3.5 0 0 0 0-7H8a3.5 3.5 0 0 1 0-7h7.5"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="2"/><rect x="14" y="4" width="7" height="16" rx="2"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.3 7.2 10.6 16M16.7 7.2 13.4 16M7.5 6h9"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2Z"/><path d="M16 14.5h.01"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 4.2-2.7M10.7 5.1A15 15 0 0 1 22 8.8M5 12.9a10 10 0 0 1 5.2-2.8M15.8 11.4A10 10 0 0 1 19 12.9M12 20h.01"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></symbol>
+  </defs>
+</svg>
+
+<!-- ===================== CONTROLES DEL MOCKUP ===================== -->
+<div class="proto" role="region" aria-label="Controles del mockup (no forman parte del producto)">
+  <b>Mockup · Universidad EAN</b>
+  <div class="grp"><span class="lab">Vista</span>
+    <button data-device="desktop" aria-pressed="true">Escritorio</button>
+    <button data-device="mobile" aria-pressed="false">Móvil</button>
+  </div>
+  <div class="grp"><span class="lab">Estado de resultados</span>
+    <button data-state="normal" aria-pressed="true">Normal</button>
+    <button data-state="loading" aria-pressed="false">Cargando</button>
+    <button data-state="empty" aria-pressed="false">Sin resultados</button>
+    <button data-state="partial" aria-pressed="false">Datos incompletos</button>
+    <button data-state="error" aria-pressed="false">Error de conexión</button>
+  </div>
+  <div class="grp">
+    <button data-theme-toggle aria-pressed="false" id="proto-theme">Modo oscuro</button>
+    <button id="anno-btn" aria-pressed="true">Anotaciones</button>
+    <button id="map-btn" aria-pressed="false">Mapa de navegación</button>
+  </div>
+</div>
+
+<div class="stage" id="stage">
+<div class="app">
+
+  <!-- ===================== SIDEBAR (escritorio) ===================== -->
+  <aside class="side" aria-label="Navegación principal">
+    <a class="lockup" href="#inicio" aria-label="Universidad EAN — inicio">
+      <svg class="logo" viewBox="0 0 858.84 337.95" aria-hidden="true"><use href="#logo-ean"/></svg>
+    </a>
+    <svg class="sym" viewBox="0 0 386 337.95" role="img" aria-label="Universidad EAN"><use href="#sym-ean"/></svg>
+
+    <a class="btn btn-primary btn-new" href="#inicio" data-new aria-label="Nueva consulta" title="Nueva consulta"><svg class="ico ico-sm"><use href="#i-plus"/></svg><span class="lbl">Nueva consulta</span></a>
+
+    <nav class="nav" aria-label="Secciones">
+      <a href="#inicio" data-nav="inicio" aria-label="Inicio" title="Inicio"><svg class="ico"><use href="#i-home"/></svg><span class="lbl">Inicio</span></a>
+      <a href="#conversacion" data-nav="conversacion" aria-label="Conversación y resultados" title="Conversación y resultados"><svg class="ico"><use href="#i-chat"/></svg><span class="lbl">Conversación</span></a>
+      <a href="#ruta" data-nav="ruta" aria-label="Mi ruta formativa" title="Mi ruta formativa"><svg class="ico"><use href="#i-route"/></svg><span class="lbl">Mi ruta formativa</span></a>
+      <a href="#fuentes" data-nav="fuentes" aria-label="Fuentes de conocimiento" title="Fuentes de conocimiento"><svg class="ico"><use href="#i-db"/></svg><span class="lbl">Fuentes</span></a>
+    </nav>
+
+    <div class="side-sec">
+      <h4>Propuestas</h4>
+      <div class="soon"><svg class="ico ico-sm"><use href="#i-history"/></svg>Historial de consultas <span class="anno dev">Persistencia</span></div>
+      <div class="soon"><svg class="ico ico-sm"><use href="#i-gear"/></svg>Gestión de fuentes <span class="anno dev">Admin</span></div>
+    </div>
+
+    <div class="side-foot">
+      <span class="vigilada" aria-label="Vigilada Mineducación"><span class="l">Vigilada </span><span class="b">Min</span><span class="l">educación</span></span>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="m-lockup">
+        <svg class="logo" viewBox="0 0 858.84 337.95" role="img" aria-label="Universidad EAN"><use href="#logo-ean"/></svg>
+        <button class="icon-btn" style="margin-left:auto" data-theme-toggle aria-label="Cambiar a modo oscuro" title="Cambiar modo"><svg class="ico"><use data-theme-ico href="#i-moon"/></svg></button><a class="icon-btn" href="#inicio" data-new aria-label="Nueva consulta" title="Nueva consulta" style="margin-left:0"><svg class="ico"><use href="#i-plus"/></svg></a>
+      </div>
+      <div class="tblock"><span class="kicker" id="tk">Inicio</span><h1 id="tt">inicio</h1></div>
+      <span class="top-theme"><button class="icon-btn" data-theme-toggle aria-label="Cambiar a modo oscuro" title="Cambiar modo"><svg class="ico"><use data-theme-ico href="#i-moon"/></svg></button></span>
+    </header>
+
+    <main>
+    <!-- ================= 1. INICIO CONVERSACIONAL ================= -->
+    <section class="view" id="v-inicio" aria-labelledby="home-t">
+      <div class="home">
+        <div class="hero">
+          <svg class="pattern" viewBox="0 0 386 337.95" aria-hidden="true"><use href="#sym-ean"/></svg>
+          <span class="kicker">Cerebro académico · Universidad EAN</span>
+          <h2 id="home-t">¿qué quieres aprender? construyamos juntos tu futuro.</h2>
+          <p>Cuéntame tus intereses, experiencia y objetivo profesional. Busco en la oferta de la Universidad EAN y te explico qué encontré, por qué es relevante.</p>
+        </div>
+
+        <form class="composer" data-composer>
+          <label class="sr-only" for="q-home">Escribe tu consulta</label>
+          <textarea id="q-home" rows="2" placeholder="Ej.: quiero aprender análisis de datos y trabajo de tiempo completo…"></textarea>
+          <div class="c-row" role="group" aria-label="Tarea del asistente">
+            <button type="button" class="task" aria-pressed="true" title="Explorar oferta académica"><svg class="ico ico-sm"><use href="#i-search"/></svg><span class="lbl">Explorar oferta</span></button>
+            <button type="button" class="task" aria-pressed="false" title="Comparar formación"><svg class="ico ico-sm"><use href="#i-compare"/></svg><span class="lbl">Comparar</span></button>
+            <button type="button" class="task" aria-pressed="false" title="Construir una ruta"><svg class="ico ico-sm"><use href="#i-route"/></svg><span class="lbl">Construir ruta</span></button>
+            <button type="button" class="task" aria-pressed="false" title="Consultar fuentes"><svg class="ico ico-sm"><use href="#i-db"/></svg><span class="lbl">Fuentes</span></button>
+            <button type="button" class="task" aria-pressed="false" title="Explorar conexiones"><svg class="ico ico-sm"><use href="#i-graph"/></svg><span class="lbl">Conexiones</span></button>
+            <button type="submit" class="send" aria-label="Enviar consulta" disabled><svg class="ico"><use href="#i-up"/></svg></button>
+          </div>
+        </form>
+        <div class="legend"><span class="anno conf">Asistente y búsqueda vía API</span><span class="anno dev">Selector de tareas: UI nueva</span></div>
+
+        <div class="sugs">
+          <button class="sug" data-go="conv" data-q="Quiero aprender inteligencia artificial. ¿Por dónde empiezo?"><span class="i"><svg class="ico"><use href="#i-spark"/></svg></span><span><b>Quiero aprender inteligencia artificial. ¿Por dónde empiezo?</b></span></button>
+          <button class="sug" data-go="ruta" data-q="Ayúdame a construir una ruta hacia ciencia de datos."><span class="i"><svg class="ico"><use href="#i-route"/></svg></span><span><b>Ayúdame a construir una ruta hacia ciencia de datos.</b></span></button>
+          <button class="sug" data-go="conv" data-q="¿Qué programas incluyen temas que me interesan?"><span class="i"><svg class="ico"><use href="#i-cap"/></svg></span><span><b>¿Qué programas incluyen temas que me interesan?</b></span></button>
+          <button class="sug" data-go="conv" data-q="Busca cursos según mi presupuesto y tiempo disponible."><span class="i"><svg class="ico"><use href="#i-wallet"/></svg></span><span><b>Busca cursos según mi presupuesto y tiempo disponible.</b></span></button>
+          <button class="sug" data-go="cmp" data-q="Compara estas opciones de formación."><span class="i"><svg class="ico"><use href="#i-compare"/></svg></span><span><b>Compara estas opciones de formación.</b></span></button>
+          <button class="sug" data-go="det" data-q="Muéstrame cómo se conecta una unidad de estudio con su programa."><span class="i"><svg class="ico"><use href="#i-link"/></svg></span><span><b>Muéstrame cómo se conecta una unidad de estudio con su programa.</b></span></button>
+          <button class="sug" disabled aria-disabled="true"><span class="i"><svg class="ico"><use href="#i-brief"/></svg></span><span><b>¿Qué formación se relaciona con mi objetivo laboral?</b><small><span class="chip plan">Próxima funcionalidad · empleabilidad</span></small></span></button>
+        </div>
+
+        <p class="trust"><span class="chip ok">Consulta pública · sin inicio de sesión</span><span>El asistente orienta: no garantiza admisión, homologación, certificación ni contratación, y no consulta datos personales.</span></p>
+      </div>
+    </section>
+
+    <!-- ================= 2. CONVERSACIÓN Y RESULTADOS ================= -->
+    <section class="view" id="v-conversacion" aria-label="Conversación y resultados">
+      <div class="conv">
+        <div>
+          <div class="thread" aria-live="polite">
+            <div class="msg-u" id="first-q">Quiero aprender inteligencia artificial, pero no tengo experiencia. ¿Por dónde empiezo?</div>
+            <div class="msg-a">
+              <span class="av" aria-hidden="true"><svg viewBox="0 0 386 337.95"><use href="#sym-ean"/></svg></span>
+              <div class="ans">
+                <span class="who">Universidad EAN</span>
+                <p>Puedo ayudarte a buscar una ruta de inicio. ¿Buscas un curso corto o un programa académico? Cuéntame también si tienes experiencia en programación para orientar la búsqueda.</p>
+                <div class="choices" role="group" aria-label="Tipo de formación">
+                  <button class="choice" aria-pressed="true">Curso corto</button>
+                  <button class="choice" aria-pressed="false">Programa académico</button>
+                  <button class="choice" aria-pressed="false">Aún no lo sé</button>
+                </div>
+                <div class="choices" role="group" aria-label="Experiencia en programación">
+                  <button class="choice" aria-pressed="true">Sin experiencia en programación</button>
+                  <button class="choice" aria-pressed="false">Tengo bases</button>
+                </div>
+              </div>
+            </div>
+            <div class="msg-u">Un curso corto. Prefiero virtual, máximo $500.000 y menos de 40 horas.</div>
+            <div class="msg-a">
+              <span class="av" aria-hidden="true"><svg viewBox="0 0 386 337.95"><use href="#sym-ean"/></svg></span>
+              <div class="ans" id="ans-results">
+                <span class="who">Universidad EAN <span class="anno conf">Búsqueda en grafo vía API</span></span>
+                <!-- contenido según estado (JS) -->
+              </div>
+            </div>
+          </div>
+
+          <div class="tray" id="tray" role="status">
+            <svg class="ico"><use href="#i-compare"/></svg>
+            <span class="tblock"><b id="tray-t">1 opción seleccionada</b><small>Selecciona otra para comparar</small></span>
+            <button class="btn btn-primary btn-sm" id="tray-go" disabled>Comparar</button>
+          </div>
+
+          <div class="dock">
+            <form class="composer" data-composer>
+              <label class="sr-only" for="q-conv">Escribe tu siguiente consulta</label>
+              <textarea id="q-conv" rows="1" placeholder="Ajusta criterios o haz otra pregunta…"></textarea>
+              <div class="c-row">
+                <button type="button" class="task" aria-pressed="true" title="Explorar oferta académica"><svg class="ico ico-sm"><use href="#i-search"/></svg><span class="lbl">Explorar</span></button>
+                <button type="button" class="task" aria-pressed="false" title="Construir el camino"><svg class="ico ico-sm"><use href="#i-route"/></svg><span class="lbl">Ruta</span></button>
+                <button type="submit" class="send" aria-label="Enviar consulta" disabled><svg class="ico"><use href="#i-up"/></svg></button>
+              </div>
+            </form>
+            <p class="dock-note">El asistente puede equivocarse. Verifica precios, fechas y requisitos en la fuente oficial antes de decidir.</p>
+          </div>
+        </div>
+
+        <aside class="aside" aria-label="Contexto de la búsqueda">
+          <div class="card">
+            <span class="kicker">Criterios aplicados</span>
+            <h3>lo que entendí</h3>
+            <div class="crit">
+              <div><span>Interés</span><span>Inteligencia artificial</span></div>
+              <div><span>Nivel</span><span>Sin experiencia</span></div>
+              <div><span>Tipo</span><span>Curso corto</span></div>
+              <div><span>Modalidad</span><span>Virtual</span></div>
+              <div><span>Precio</span><span>≤ $500.000</span></div>
+              <div><span>Duración</span><span>&lt; 40 horas</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="kicker">Fuentes consultadas</span>
+            <h3>de dónde viene</h3>
+            <div class="mini-list">
+              <div class="row"><span class="type ec" style="width:24px;padding:0"></span><span class="tblock"><b>Catálogo de Educación Continuada</b><small>SAP/OData</small></span></div>
+              <div class="row"><span class="type unit" style="width:24px;padding:0"></span><span class="tblock"><b>Unidades de estudio y syllabus</b><small>Vínculos por código</small></span></div>
+              <div class="row"><span class="type prog" style="width:24px;padding:0"></span><span class="tblock"><b>Catálogo de programas oficiales</b><small>Campos SNIES</small></span></div>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="#fuentes" style="margin-top:14px;width:100%">Ver todas las fuentes</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= 3. DETALLE DE FORMACIÓN ================= -->
+    <section class="view" id="v-detalle" aria-labelledby="det-t">
+      <nav class="crumbs" aria-label="Ruta de navegación"><a href="#conversacion">Resultados</a><span>/</span><span>Unidad de estudio</span><span>/</span><span aria-current="page">Programa contenedor</span></nav>
+      <div class="detail">
+        <div style="min-width:0;container-type:inline-size">
+          <div class="d-head">
+            <div class="row"><span class="type prog">Programa oficial</span><span class="chip ok">Encontrado mediante una unidad de estudio</span><span class="anno conf">Vínculo por código</span></div>
+            <h2 id="det-t"><span class="ph">nombre del programa</span></h2>
+            <p class="muted">Llegaste aquí desde la unidad <span class="ph">nombre de la unidad</span>. La unidad pertenece a este programa porque existe un vínculo estructural verificado por código.</p>
+            <div class="row">
+              <button class="btn btn-primary" data-addroute><svg class="ico ico-sm"><use href="#i-route"/></svg>Agregar a mi ruta</button>
+              <button class="btn btn-line"><svg class="ico ico-sm"><use href="#i-compare"/></svg>Comparar</button>
+              <a class="btn btn-line" href="#fuentes"><svg class="ico ico-sm"><use href="#i-db"/></svg>Ver fuente</a>
+            </div>
+          </div>
+
+          <div class="section-title"><h3>atributos disponibles</h3><span class="anno conf">Catálogo de programas · SNIES</span></div>
+          <div class="agrid">
+            <div class="tile"><small>Nombre para búsqueda</small><span><span class="ph">descripción abreviada</span></span><code>SNIES_DESCRIPCION_ABREVIADA</code></div>
+            <div class="tile"><small>Denominación del título</small><span><span class="ph">distinción de género</span></span><code>SNIES_DISTINCION_GENERO</code></div>
+            <div class="tile"><small>Código del programa</small><span><span class="ph">código</span></span><code>clave del vínculo unidad → programa</code></div>
+            <div class="tile"><small>Nivel de formación</small><span><span class="ph">nivel</span></span><code>campo SNIES · si existe</code></div>
+            <div class="tile"><small>Modalidad</small><span><span class="ph">modalidad</span></span><code>campo SNIES · si existe</code></div>
+            <div class="tile miss"><small>Precio</small><span>No registrado en esta fuente</span><code>Validar con la oferta institucional</code></div>
+          </div>
+          <div class="callout warn" style="margin-top:12px"><svg class="ico"><use href="#i-alert"/></svg><span><b>Datos incompletos.</b> Este programa no tiene precio registrado en la fuente consultada. El asistente no lo estima; consulta la información oficial antes de decidir.</span></div>
+
+          <div class="section-title"><h3>unidades de estudio asociadas</h3><span class="anno conf">Syllabus + vínculo por código</span></div>
+          <div class="card" style="padding:6px 20px">
+            <div class="units">
+              <div class="urow"><span class="type unit">Unidad</span><span class="tblock"><b><span class="ph">nombre de la unidad</span></b><small>Origen de esta consulta · syllabus disponible</small></span><span class="chip ok">Vínculo verificado</span><a class="btn btn-ghost btn-sm" href="#fuentes">Ver syllabus</a></div>
+              <div class="urow"><span class="type unit">Unidad</span><span class="tblock"><b><span class="ph">nombre de la unidad</span></b><small>Syllabus disponible</small></span><span class="chip ok">Vínculo verificado</span><a class="btn btn-ghost btn-sm" href="#fuentes">Ver syllabus</a></div>
+              <div class="urow"><span class="type unit">Unidad</span><span class="tblock"><b><span class="ph">nombre de la unidad</span></b><small>Syllabus pendiente de validar</small></span><span class="chip warn">Syllabus por validar</span><a class="btn btn-ghost btn-sm" href="#fuentes">Ver fuente</a></div>
+            </div>
+          </div>
+
+          <div class="section-title"><h3>relaciones</h3>
+            <div class="tabs" role="tablist" aria-label="Formato de relaciones" data-switch="det">
+              <button class="tab" role="tab" aria-selected="true" data-p="list"><svg class="ico ico-sm"><use href="#i-list"/></svg>Lista</button>
+              <button class="tab" role="tab" aria-selected="false" data-p="graph"><svg class="ico ico-sm"><use href="#i-graph"/></svg>Grafo</button>
+            </div>
+            <span class="anno dev">Endpoint de relaciones para UI</span>
+          </div>
+          <div data-pane="det-list" style="container-type:inline-size">
+            <div class="rels">
+              <div class="rel"><div class="node"><span class="type unit">Unidad de estudio</span><b><span class="ph">unidad</span></b></div><div class="edge">pertenece a<i></i>código verificado</div><div class="node"><span class="type prog">Programa oficial</span><b><span class="ph">programa</span></b></div><p class="why">Relación estructural: la unidad forma parte del programa según su código.</p></div>
+              <div class="rel aff"><div class="node"><span class="type unit">Unidad de estudio</span><b><span class="ph">unidad</span></b></div><div class="edge">afinidad temática<i></i>similitud semántica</div><div class="node"><span class="type ec">Educación Continuada</span><b><span class="ph">curso</span></b></div><p class="why">Comparten temas en sus descripciones. <b>No implica equivalencia, homologación ni prerrequisito.</b></p></div>
+              <div class="rel plan"><div class="node"><span class="type prog">Programa oficial</span><b><span class="ph">programa</span></b></div><div class="edge">contenido relacionado<i></i>integración prevista</div><div class="node"><span class="type eanx">EAN X</span><b>Disponibilidad por confirmar</b></div><p class="why">Ampliación del proyecto: aún no hay datos de EAN X conectados al grafo.</p></div>
+            </div>
+          </div>
+          <div data-pane="det-graph" hidden>
+            <svg class="graph" viewBox="0 0 760 330" role="img" aria-labelledby="g1t">
+              <title id="g1t">Grafo: unidad de estudio pertenece al programa oficial (vínculo verificado); afinidad temática con un curso de Educación Continuada; relación prevista con EAN X.</title>
+              <line class="e-ok" x1="210" y1="165" x2="452" y2="92" marker-end="url(#ar)"/>
+              <line class="e-aff" x1="210" y1="185" x2="452" y2="250" marker-end="url(#ar2)"/>
+              <line class="e-plan" x1="600" y1="122" x2="600" y2="218"/>
+              <rect class="lbl-bg" x="268" y="96" width="140" height="26" rx="13"/><text class="t-lbl" x="338" y="114" text-anchor="middle">pertenece a · código</text>
+              <rect class="lbl-bg" x="262" y="214" width="152" height="26" rx="13"/><text class="t-lbl" x="338" y="232" text-anchor="middle">afinidad temática</text>
+              <rect class="lbl-bg" x="612" y="157" width="120" height="26" rx="13"/><text class="t-plan" x="672" y="175" text-anchor="middle">prevista</text>
+              <rect class="n-unit" x="30" y="140" width="180" height="70" rx="13"/>
+              <text class="t-unit t-k" x="120" y="170" text-anchor="middle">UNIDAD DE ESTUDIO</text>
+              <text class="t-unit t-ph" x="120" y="192" text-anchor="middle">‹unidad›</text>
+              <rect class="n-prog" x="455" y="52" width="290" height="70" rx="13"/>
+              <text class="t-ink t-k" x="600" y="82" text-anchor="middle">PROGRAMA OFICIAL</text>
+              <text class="t-muted t-ph" x="600" y="104" text-anchor="middle">‹programa›</text>
+              <rect class="n-ec" x="455" y="220" width="290" height="70" rx="13"/>
+              <text class="t-ec t-k" x="600" y="250" text-anchor="middle">EDUCACIÓN CONTINUADA</text>
+              <text class="t-ec t-ph" x="600" y="272" text-anchor="middle">‹curso›</text>
+            </svg>
+            <p class="g-note">Línea continua: vínculo estructural verificado. Discontinua: afinidad temática (no es equivalencia). Punteada: integración prevista. La lista contiene la misma información.</p>
+          </div>
+        </div>
+
+        <aside style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <span class="kicker">Procedencia</span>
+            <h3 style="margin:6px 0 12px">fuentes de este detalle</h3>
+            <div class="mini-list">
+              <div class="row"><span class="tblock"><b>Catálogo de programas oficiales</b><small>Campos SNIES disponibles</small></span><span class="chip ok">Disponible</span></div>
+              <div class="row"><span class="tblock"><b>Unidades de estudio y syllabus</b><small>Vínculos por código</small></span><span class="chip ok">Disponible</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <span class="kicker">Cómo leer esta relación</span>
+            <h3 style="margin:6px 0 12px">pertenencia vs. afinidad</h3>
+            <p class="muted" style="font-size:13.5px">Una unidad <b style="color:var(--ink)">pertenece</b> a un programa solo si existe un vínculo por código. Si solo hay similitud de contenido, se muestra como <b style="color:var(--ink)">afinidad</b>, sin equivalencias ni prerrequisitos.</p>
+          </div>
+          <div class="card">
+            <span class="kicker">Estado sin vínculo</span>
+            <h3 style="margin:6px 0 12px">cuando falta el código</h3>
+            <div class="callout warn"><svg class="ico"><use href="#i-link"/></svg><span>No encontré un vínculo verificado entre esta unidad y un programa. Solo puedo mostrarla como afinidad temática.</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= 4. MI RUTA FORMATIVA ================= -->
+    <section class="view" id="v-ruta" aria-labelledby="ruta-t">
+      <div class="page-head">
+        <div class="tblock">
+          <span class="kicker">Mi ruta formativa · sugerida</span>
+          <h2 id="ruta-t">tu ruta hacia ciencia de datos</h2>
+          <p>Secuencia propuesta a partir de tus respuestas. Es una recomendación de orientación, no un plan de estudios oficial.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Formato de la ruta" data-switch="ruta">
+          <button class="tab" role="tab" aria-selected="true" data-p="list"><svg class="ico ico-sm"><use href="#i-list"/></svg>Pasos</button>
+          <button class="tab" role="tab" aria-selected="false" data-p="graph"><svg class="ico ico-sm"><use href="#i-graph"/></svg>Grafo</button>
+        </div>
+      </div>
+
+      <div class="route">
+        <div style="min-width:0">
+          <div class="goal">
+            <span class="tblock"><small>Objetivo declarado</small><b>Trabajar en ciencia de datos partiendo sin experiencia en programación</b></span>
+            <button class="btn btn-line btn-sm" disabled title="Función propuesta"><svg class="ico ico-sm"><use href="#i-bookmark"/></svg>Guardar ruta</button>
+            <span class="anno dev">Guardar: requiere persistencia</span>
+          </div>
+          <div class="legend" style="margin-bottom:18px">
+            <span class="kind rec">Recomendación</span><span class="muted">Sugerida por afinidad con tu objetivo.</span>
+            <span class="kind req">Requisito oficial</span><span class="muted">Solo si la fuente lo establece. Esta ruta no tiene ninguno verificado.</span>
+          </div>
+
+          <div data-pane="ruta-list">
+          <div class="timeline">
+            <div class="stp"><div class="rail"><span class="hex" style="background:#00C0B3;color:#000">1</span></div>
+              <div class="body"><div class="card">
+                <div class="row"><span class="type ec">Educación Continuada</span><span class="kind rec">Recomendación</span></div>
+                <h4 style="font:700 17px/1.3 var(--f-title);letter-spacing:-.03em;color:var(--ink)"><span class="ph">curso introductorio</span></h4>
+                <p class="why"><b>Por qué este paso:</b> empiezas sin experiencia en programación; un curso corto de fundamentos te da bases antes de una formación más larga.</p>
+                <div class="src"><svg class="ico ico-sm"><use href="#i-db"/></svg>Catálogo de Educación Continuada · SAP/OData</div>
+              </div></div></div>
+            <div class="conn"><svg class="ico ico-sm"><use href="#i-link"/></svg><span><b>Conexión:</b> afinidad temática con la unidad del paso 2. No es un prerrequisito oficial.</span><span class="chip warn">Afinidad</span></div>
+
+            <div class="stp"><div class="rail"><span class="hex inv">2</span></div>
+              <div class="body"><div class="card">
+                <div class="row"><span class="type unit">Unidad de estudio</span><span class="kind rec">Recomendación</span></div>
+                <h4 style="font:700 17px/1.3 var(--f-title);letter-spacing:-.03em;color:var(--ink)"><span class="ph">unidad de estudio</span></h4>
+                <p class="why"><b>Por qué este paso:</b> su syllabus trata temas de análisis de datos y te permite conocer el programa al que pertenece.</p>
+                <div class="link-row"><span class="chip ok">Vínculo verificado</span>Pertenece a <span class="ph">programa oficial</span></div>
+                <div class="src"><svg class="ico ico-sm"><use href="#i-db"/></svg>Unidades de estudio y syllabus</div>
+              </div></div></div>
+            <div class="conn"><svg class="ico ico-sm"><use href="#i-link"/></svg><span><b>Conexión:</b> la unidad pertenece al programa del paso 3 (vínculo por código).</span><span class="chip ok">Estructural</span></div>
+
+            <div class="stp"><div class="rail"><span class="hex" style="background:#3BAC52;color:#000">3</span></div>
+              <div class="body"><div class="card">
+                <div class="row"><span class="type prog">Programa oficial</span><span class="kind rec">Recomendación</span></div>
+                <h4 style="font:700 17px/1.3 var(--f-title);letter-spacing:-.03em;color:var(--ink)"><span class="ph">programa oficial</span></h4>
+                <p class="why"><b>Por qué este paso:</b> formación académica completa en el área de tu objetivo. Los requisitos de admisión se consultan en la fuente oficial; el asistente no los verifica ni garantiza.</p>
+                <div class="row"><a class="btn btn-ghost btn-sm" href="#detalle">Ver detalle</a><span class="src"><svg class="ico ico-sm"><use href="#i-db"/></svg>Catálogo de programas oficiales</span></div>
+              </div></div></div>
+
+            <div class="stp later"><div class="rail"><span class="hex off">4</span></div>
+              <div class="body"><div class="card">
+                <div class="row"><span class="type eanx">EAN X</span><span class="chip plan">Integración prevista</span><span class="anno ext">Ampliación</span></div>
+                <h4 style="font:700 16px/1.3 var(--f-title);letter-spacing:-.03em">contenidos de aprendizaje complementarios</h4>
+                <p class="why">Cuando EAN X esté conectado al grafo, aquí aparecerán contenidos relacionados con cada paso.</p>
+              </div></div></div>
+            <div class="stp later"><div class="rail"><span class="hex off">5</span></div>
+              <div class="body"><div class="card">
+                <div class="row"><span class="type emp">Empleabilidad</span><span class="chip plan">Próxima funcionalidad</span><span class="anno ext">elempleo.com</span></div>
+                <h4 style="font:700 16px/1.3 var(--f-title);letter-spacing:-.03em">relación con ofertas laborales</h4>
+                <p class="why">Mostrará qué necesidades del mercado laboral se relacionan con tu ruta. No garantizará contratación.</p>
+              </div></div></div>
+          </div>
+          </div>
+
+          <div data-pane="ruta-graph" hidden>
+            <svg class="graph" viewBox="0 0 760 260" role="img" aria-labelledby="g2t">
+              <title id="g2t">Grafo de la ruta: curso de Educación Continuada con afinidad hacia una unidad de estudio, que pertenece a un programa oficial; EAN X y empleabilidad previstos.</title>
+              <line class="e-aff" x1="170" y1="110" x2="285" y2="110" marker-end="url(#ar2)"/>
+              <line class="e-ok" x1="425" y1="110" x2="540" y2="110" marker-end="url(#ar)"/>
+              <line class="e-plan" x1="610" y1="145" x2="610" y2="190"/>
+              <line class="e-plan" x1="560" y1="145" x2="420" y2="200"/>
+              <rect class="n-ec" x="20" y="75" width="150" height="70" rx="13"/><text class="t-ec t-k" x="95" y="104" text-anchor="middle">1 · EDUC. CONTINUADA</text><text class="t-ec t-ph" x="95" y="126" text-anchor="middle">‹curso›</text>
+              <rect class="n-unit" x="287" y="75" width="138" height="70" rx="13"/><text class="t-unit t-k" x="356" y="104" text-anchor="middle">2 · UNIDAD</text><text class="t-unit t-ph" x="356" y="126" text-anchor="middle">‹unidad›</text>
+              <rect class="n-prog" x="542" y="75" width="200" height="70" rx="13"/><text class="t-ink t-k" x="642" y="104" text-anchor="middle">3 · PROGRAMA OFICIAL</text><text class="t-muted t-ph" x="642" y="126" text-anchor="middle">‹programa›</text>
+              <rect class="n-plan" x="545" y="192" width="130" height="46" rx="13"/><text class="t-plan" x="610" y="220" text-anchor="middle">EAN X · prevista</text>
+              <rect class="n-plan" x="300" y="192" width="150" height="46" rx="13"/><text class="t-plan" x="375" y="220" text-anchor="middle">Empleabilidad · prevista</text>
+              <text class="t-warn t-lab" x="228" y="98" text-anchor="middle">afinidad</text>
+              <text class="t-ink t-lab" x="482" y="98" text-anchor="middle">pertenece a</text>
+            </svg>
+            <p class="g-note">El grafo complementa los pasos; la lista contiene la misma información y explicación de cada conexión.</p>
+          </div>
+        </div>
+
+        <aside style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <span class="kicker">Cómo se armó</span>
+            <h3 style="margin:6px 0 12px">tu perfil para esta ruta</h3>
+            <div class="crit">
+              <div><span>Objetivo</span><span>Ciencia de datos</span></div>
+              <div><span>Experiencia</span><span>Sin programación</span></div>
+              <div><span>Edad</span><span class="muted" style="font-weight:500">No indicada</span></div>
+              <div><span>Experiencia laboral</span><span class="muted" style="font-weight:500">No indicada</span></div>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:14px;width:100%" onclick="location.hash='#conversacion'">Ajustar en la conversación</button>
+          </div>
+          <div class="callout info"><svg class="ico"><use href="#i-info"/></svg><span><b>Recomendación ≠ requisito.</b> El orden de los pasos es una sugerencia. Admisiones, homologaciones y prerrequisitos solo los define la universidad en sus fuentes oficiales.</span></div>
+          <div class="card">
+            <span class="kicker">Funciones propuestas</span>
+            <h3 style="margin:6px 0 12px">para una etapa posterior</h3>
+            <div class="mini-list">
+              <div class="row"><svg class="ico ico-sm"><use href="#i-bookmark"/></svg><span class="tblock"><b>Guardar y retomar la ruta</b><small>Requiere persistencia</small></span><span class="anno dev">Dev</span></div>
+              <div class="row"><svg class="ico ico-sm"><use href="#i-share"/></svg><span class="tblock"><b>Compartir enlace de la ruta</b><small>Requiere persistencia</small></span><span class="anno dev">Dev</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= 5. FUENTES DE CONOCIMIENTO ================= -->
+    <section class="view" id="v-fuentes" aria-labelledby="src-t">
+      <div class="page-head">
+        <div class="tblock">
+          <span class="kicker">Fuentes de conocimiento</span>
+          <h2 id="src-t">de dónde vienen las respuestas</h2>
+          <p>El asistente combina catálogos estructurados y documentos académicos en un grafo de conocimiento. Aquí ves la procedencia, actualización y disponibilidad de cada fuente.</p>
+        </div>
+        <span class="chip plan" title="Propuesta">Gestión de fuentes · solo administradores · propuesta</span>
+      </div>
+
+      <div class="card" style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="kicker">Arquitectura de referencia</span><span class="anno conf">Confirmada</span></div>
+        <div class="arch">
+          <div class="box"><b>Fuentes</b><small>SAP/OData · syllabus procesados</small></div>
+          <div class="arr"><svg class="ico"><use href="#i-arrow"/></svg></div>
+          <div class="box"><b>Grafo Neo4j</b><small>Programas, unidades y Educación Continuada</small></div>
+          <div class="arr"><svg class="ico"><use href="#i-arrow"/></svg></div>
+          <div class="box"><b>API FastAPI</b><small>Herramientas de solo lectura</small></div>
+          <div class="arr"><svg class="ico"><use href="#i-arrow"/></svg></div>
+          <div class="box front"><b>Frontend React</b><small>Consume la API · sin credenciales ni consultas libres al grafo</small></div>
+        </div>
+      </div>
+
+      <div class="toolbar" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+        <div class="tabs" role="tablist" aria-label="Filtrar por estado" data-filter="src">
+          <button class="tab" role="tab" aria-selected="true" data-f="all">Todas</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="ok">Disponible</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="warn">Pendiente de validar</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="plan">Integración prevista</button>
+        </div>
+      </div>
+      <div class="srcs" id="srcs"></div>
+      <p class="muted" style="font-size:13px;margin-top:16px">Las fechas de actualización se muestran solo cuando la API las entrega. No se presentan cantidades de registros hasta contar con un inventario validado.</p>
+    </section>
+    </main>
+
+    <footer class="foot">
+      <span class="vigilada" aria-label="Vigilada Mineducación"><span class="l">Vigilada </span><span class="b">Min</span><span class="l">educación</span></span>
+      <span>Universidad EAN · El asistente orienta; no reemplaza la información oficial ni garantiza admisión, homologación, certificación o contratación.</span>
+    </footer>
+
+    <nav class="mnav" aria-label="Secciones">
+      <a href="#inicio" data-nav="inicio"><svg class="ico"><use href="#i-home"/></svg><span>Inicio</span></a>
+      <a href="#conversacion" data-nav="conversacion"><svg class="ico"><use href="#i-chat"/></svg><span>Chat</span></a>
+      <a href="#detalle" data-nav="detalle"><svg class="ico"><use href="#i-doc"/></svg><span>Detalle</span></a>
+      <a href="#ruta" data-nav="ruta"><svg class="ico"><use href="#i-route"/></svg><span>Mi ruta</span></a>
+      <a href="#fuentes" data-nav="fuentes"><svg class="ico"><use href="#i-db"/></svg><span>Fuentes</span></a>
+    </nav>
+  </div>
+</div>
+
+<!-- ===================== MODAL: COMPARAR ===================== -->
+<div class="modal" id="m-cmp" role="dialog" aria-modal="true" aria-labelledby="cmp-t">
+  <div class="sheet">
+    <div class="sheet-head"><div class="tblock"><span class="kicker">Comparar formación</span><h2 id="cmp-t" style="font-size:24px">comparación lado a lado</h2></div><button class="icon-btn" data-close aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+    <div class="cmp-grid">
+      <div class="h corner top"></div><div class="c top"><span class="type ec">Educación Continuada</span></div><div class="c top"><span class="type ec">Educación Continuada</span></div>
+      <div class="h">Nombre</div><div class="c"><span class="ph">curso A</span></div><div class="c"><span class="ph">curso B</span></div>
+      <div class="h">Modalidad</div><div class="c">Virtual</div><div class="c">Virtual</div>
+      <div class="h">Duración</div><div class="c"><span class="ph">horas</span></div><div class="c"><span class="ph">horas</span></div>
+      <div class="h">Precio</div><div class="c"><span class="ph">valor</span></div><div class="c"><span class="chip warn">No registrado</span></div>
+      <div class="h">Fechas</div><div class="c"><span class="ph">inicio</span></div><div class="c"><span class="chip warn">No registradas</span></div>
+      <div class="h">Por qué aparece</div><div class="c">Coincide con «inteligencia artificial»</div><div class="c">Coincide con «fundamentos de datos»</div>
+      <div class="h">Fuente</div><div class="c">Catálogo de Educación Continuada</div><div class="c">Catálogo de Educación Continuada</div>
+    </div>
+    <div class="callout warn" style="margin-top:14px"><svg class="ico"><use href="#i-alert"/></svg><span>Uno de los resultados no tiene precio ni fechas registrados. Valídalos antes de decidir.</span></div>
+    <p style="margin-top:12px" class="legend"><span class="anno dev">Comparación: requiere endpoint o lógica en frontend</span></p>
+  </div>
+</div>
+
+<!-- ===================== MODAL: MAPA DE NAVEGACIÓN ===================== -->
+<div class="modal" id="m-map" role="dialog" aria-modal="true" aria-labelledby="map-t">
+  <div class="sheet">
+    <div class="sheet-head"><div class="tblock"><span class="kicker">Estructura de navegación</span><h2 id="map-t" style="font-size:24px">mapa del mockup</h2></div><button class="icon-btn" data-close aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+    <div class="navmap">
+      <a class="tile" href="#inicio" data-close style="text-decoration:none"><span class="hex" style="background:#3BAC52;color:#000">1</span><b>inicio conversacional</b><small>Consulta, tareas del asistente y sugerencias.</small></a>
+      <a class="tile" href="#conversacion" data-close style="text-decoration:none"><span class="hex inv">2</span><b>conversación y resultados</b><small>Preguntas de aclaración, filtros, tarjetas, fuentes, comparar.</small></a>
+      <a class="tile" href="#detalle" data-close style="text-decoration:none"><span class="hex" style="background:#00C0B3;color:#000">3</span><b>detalle de formación</b><small>Atributos, unidades asociadas, relaciones (lista / grafo).</small></a>
+      <a class="tile" href="#ruta" data-close style="text-decoration:none"><span class="hex" style="background:#3BAC52;color:#000">4</span><b>mi ruta formativa</b><small>Pasos, motivo de cada uno, recomendación vs. requisito.</small></a>
+      <a class="tile" href="#fuentes" data-close style="text-decoration:none"><span class="hex inv">5</span><b>fuentes de conocimiento</b><small>Procedencia, actualización y estado.</small></a>
+    </div>
+    <div class="callout" style="margin-top:14px"><svg class="ico"><use href="#i-map"/></svg><span>Flujo principal: <b>Inicio → Conversación → Detalle → Mi ruta</b>. Fuentes es accesible desde cualquier resultado. Historial y Gestión de fuentes quedan como propuestas.</span></div>
+    <div class="legend" style="margin-top:14px"><span class="anno conf">Capacidad confirmada</span><span class="anno dev">Requiere desarrollo</span><span class="anno ext">Ampliación prevista</span></div>
+  </div>
+</div>
+</div>
+
+<script>
+(function () {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const stage = $('#stage');
+  /* ---------------- Tema: sigue al sistema; el botón alterna (en memoria) ---------------- */
+  const root = document.documentElement; const mq = matchMedia('(prefers-color-scheme: dark)'); let chosen = null;
+  function applyTheme(t) {
+    root.setAttribute('data-theme', t); const d = t === 'dark';
+    $$('[data-theme-ico]').forEach(u => u.setAttribute('href', d ? '#i-sun' : '#i-moon'));
+    $$('[data-theme-toggle]').forEach(b => b.setAttribute('aria-label', d ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'));
+    $('#proto-theme').setAttribute('aria-pressed', d);
+  }
+  applyTheme(root.getAttribute('data-theme'));
+  mq.addEventListener && mq.addEventListener('change', e => { if (!chosen) applyTheme(e.matches ? 'dark' : 'light'); });
+
+  const scroller = () => document.body.classList.contains('mobile') && innerWidth > 700 ? stage : document.scrollingElement;
+
+  /* ---------------- Fuentes (sin cantidades ni fechas ficticias) ---------------- */
+  const SOURCES = [
+    { n: 'Catálogo de Educación Continuada', t: 'Catálogo', ic: 'i-db', a: 'Educación Continuada', o: 'SAP/OData', u: 'Fecha de carga desde la API', s: 'ok', act: 'Ver registros', anno: ['conf', 'Disponible en el grafo'] },
+    { n: 'Catálogo de programas oficiales', t: 'Catálogo', ic: 'i-cap', a: 'Oferta académica institucional · área exacta pendiente de confirmar', o: 'Campos SNIES disponibles', u: 'Fecha de carga desde la API', s: 'ok', act: 'Ver registros', anno: ['conf', 'Disponible en el grafo'] },
+    { n: 'Unidades de estudio y syllabus', t: 'Syllabus', ic: 'i-doc', a: 'Programas y unidades académicas · responsable por documento pendiente', o: 'Relaciones con programas por código', u: 'Por documento, cuando exista', s: 'ok', act: 'Ver documentos', anno: ['conf', 'Disponible en el grafo'] },
+    { n: 'Syllabus actualizados', t: 'Syllabus', ic: 'i-refresh', a: 'Pendiente de identificar', o: 'Carpeta compartida de actualización académica', u: 'Sin fecha registrada', s: 'warn', act: 'Ver documentos', anno: ['dev', 'Validación de origen'] },
+    { n: 'EAN X', t: 'Fuente institucional', ic: 'i-spark', a: 'Por confirmar', o: 'Ampliación del proyecto', u: 'No aplica aún', s: 'plan', act: null, anno: ['ext', 'Ampliación'] },
+    { n: 'Ofertas laborales · elempleo.com', t: 'Fuente externa', ic: 'i-brief', a: 'Fuente externa', o: 'Integración y disponibilidad por confirmar', u: 'No aplica aún', s: 'plan', act: null, anno: ['ext', 'Ampliación'] }
+  ];
+  const ST = { ok: 'Disponible', warn: 'Pendiente de validar', plan: 'Integración prevista' };
+  function renderSources(f = 'all') {
+    $('#srcs').innerHTML = SOURCES.filter(s => f === 'all' || s.s === f).map(s => `
+      <article class="card sc">
+        <div class="sc-head"><span class="sc-ic"><svg class="ico"><use href="#${s.ic}"/></svg></span>
+          <span class="tblock"><b title="${s.n}">${s.n}</b><small>${s.t}</small></span>
+          <span class="chip ${s.s}">${ST[s.s]}</span></div>
+        <dl class="dl">
+          <dt>Tipo</dt><dd>${s.t}</dd>
+          <dt>Responsable</dt><dd>${s.a}</dd>
+          <dt>Procedencia</dt><dd>${s.o}</dd>
+          <dt>Actualización</dt><dd>${s.u.startsWith('Fecha') ? '<span class="ph">fecha de última carga</span>' : '<span class="muted">' + s.u + '</span>'}</dd>
+        </dl>
+        <div class="sc-foot">
+          ${s.act ? `<button class="btn btn-ghost btn-sm"><svg class="ico ico-sm"><use href="#i-list"/></svg>${s.act}</button>` : `<button class="btn btn-ghost btn-sm" disabled>Aún sin registros</button>`}
+          <span class="anno ${s.anno[0]}">${s.anno[1]}</span>
+        </div>
+      </article>`).join('');
+  }
+
+  /* ---------------- Resultados por estado ---------------- */
+  const FILTERS = `
+    <div class="filters" role="group" aria-label="Filtros aplicados">
+      <svg class="ico ico-sm" aria-hidden="true"><use href="#i-filter"/></svg>
+      <button class="flt" aria-pressed="true"><span class="k">Tipo</span>Educación Continuada</button>
+      <button class="flt" aria-pressed="true"><span class="k">Modalidad</span>Virtual<svg class="ico ico-sm x"><use href="#i-x"/></svg></button>
+      <button class="flt" aria-pressed="true"><span class="k">Precio</span>≤ $500.000<svg class="ico ico-sm x"><use href="#i-x"/></svg></button>
+      <button class="flt" aria-pressed="true"><span class="k">Duración</span>&lt; 40 h<svg class="ico ico-sm x"><use href="#i-x"/></svg></button>
+      <button class="flt" aria-pressed="false"><svg class="ico ico-sm"><use href="#i-plus"/></svg>Más filtros</button>
+      <span class="anno dev">Filtros según atributos que exponga la API</span>
+    </div>`;
+  const SRC_EC = `<div class="src"><svg class="ico ico-sm"><use href="#i-db"/></svg>Catálogo de Educación Continuada · SAP/OData</div>`;
+  const ec = (id, why, partial) => `
+    <article class="card rc">
+      <div class="rc-top"><span class="type ec">Educación Continuada</span>${partial ? '<span class="chip warn">Datos incompletos</span>' : ''}</div>
+      <h4><span class="ph">nombre del curso</span></h4>
+      <div class="attrs">
+        <div class="attr"><small>Modalidad</small><span>Virtual</span></div>
+        <div class="attr"><small>Duración</small><span><span class="ph">horas</span></span></div>
+        ${partial ? '<div class="attr miss"><small>Precio</small><span>No registrado</span></div>' : '<div class="attr"><small>Precio</small><span><span class="ph">valor</span></span></div>'}
+      </div>
+      <p class="why"><b>Por qué te lo muestro:</b> ${why}</p>
+      ${SRC_EC}
+      <div class="rc-actions">
+        <a class="btn btn-ghost btn-sm" href="#detalle">Ver detalle</a>
+        <button class="btn btn-ghost btn-sm" data-addroute><svg class="ico ico-sm"><use href="#i-route"/></svg>A mi ruta</button>
+        <label class="cmp"><input type="checkbox" data-cmp="${id}">Comparar</label>
+      </div>
+    </article>`;
+  const unit = (linked) => `
+    <article class="card rc">
+      <div class="rc-top"><span class="type unit">Unidad de estudio</span>${linked ? '<span class="chip ok">Vínculo verificado</span>' : '<span class="chip warn">Solo afinidad temática</span>'}</div>
+      <h4><span class="ph">nombre de la unidad</span></h4>
+      ${linked
+        ? '<div class="link-row"><svg class="ico ico-sm"><use href="#i-link"/></svg>Pertenece a <span class="ph">programa oficial</span><span class="anno conf">Código</span></div>'
+        : '<div class="link-row"><svg class="ico ico-sm"><use href="#i-alert"/></svg>No hay vínculo por código con un programa. Se muestra solo por afinidad.</div>'}
+      <p class="why"><b>Por qué te la muestro:</b> su syllabus incluye temas de inteligencia artificial.</p>
+      <div class="src"><svg class="ico ico-sm"><use href="#i-doc"/></svg>Unidades de estudio y syllabus</div>
+      <div class="rc-actions">
+        ${linked ? '<a class="btn btn-primary btn-sm" href="#detalle">Explorar programa</a>' : '<button class="btn btn-ghost btn-sm" disabled>Sin programa asociado</button>'}
+        <a class="btn btn-ghost btn-sm" href="#fuentes">Ver syllabus</a>
+      </div>
+    </article>`;
+
+  const VIEWS_RESULTS = {
+    normal: () => `
+      <p>Consulté el catálogo de Educación Continuada con tus criterios. Encontré estas opciones; abajo verás también unidades de estudio relacionadas, que no son cursos y por eso no aplican los filtros de precio o duración.</p>
+      ${FILTERS}
+      <div class="res-head"><h3>cursos que cumplen tus criterios</h3><span class="muted" style="font-size:13px">Ordenados por relevancia</span></div>
+      <div class="results">${ec('a', 'coincide con «inteligencia artificial» en su descripción.')}${ec('b', 'coincide con «fundamentos» y «datos», útil si empiezas sin programación.')}</div>
+      <div class="res-head" style="margin-top:6px"><h3>programas encontrados mediante unidades de estudio</h3><span class="anno conf">Búsqueda por unidades</span></div>
+      <div class="results">${unit(true)}${unit(false)}</div>`,
+    partial: () => `
+      <p>Encontré opciones con tus criterios, pero <b>algunos resultados no tienen precio, duración o modalidad registrados</b>. Te lo indico para que los valides antes de decidir.</p>
+      ${FILTERS}
+      <div class="callout warn"><svg class="ico"><use href="#i-alert"/></svg><span><b>Datos incompletos.</b> No puedo confirmar si estos resultados cumplen tu límite de precio. No estimo valores faltantes.</span></div>
+      <div class="results">${ec('a', 'coincide con «inteligencia artificial» en su descripción.', true)}
+        <article class="card rc">
+          <div class="rc-top"><span class="type ec">Educación Continuada</span><span class="chip warn">Datos incompletos</span></div>
+          <h4><span class="ph">nombre del curso</span></h4>
+          <div class="attrs"><div class="attr miss"><small>Modalidad</small><span>No registrada</span></div><div class="attr miss"><small>Duración</small><span>No registrada</span></div><div class="attr"><small>Precio</small><span><span class="ph">valor</span></span></div></div>
+          <p class="why"><b>Por qué te lo muestro:</b> coincide con «aprendizaje automático».</p>${SRC_EC}
+          <div class="rc-actions"><a class="btn btn-ghost btn-sm" href="#detalle">Ver detalle</a><label class="cmp"><input type="checkbox" data-cmp="c">Comparar</label></div>
+        </article></div>`,
+    loading: () => `
+      <div class="steps" role="status" aria-label="Consultando">
+        <span class="done"><svg class="ico ico-sm"><use href="#i-check"/></svg>Interpreté tus criterios</span>
+        <span><span class="skel" style="width:14px;height:14px;border-radius:50%"></span>Buscando en Educación Continuada y unidades de estudio…</span>
+        <span><span class="skel" style="width:14px;height:14px;border-radius:50%"></span>Verificando vínculos con programas</span>
+      </div>
+      <div class="results">${[1, 2].map(() => `<div class="card rc"><div class="skel" style="width:120px;height:22px;border-radius:999px"></div><div class="skel" style="width:80%;height:20px"></div><div class="attrs"><div class="skel" style="height:44px"></div><div class="skel" style="height:44px"></div><div class="skel" style="height:44px"></div></div><div class="skel" style="width:90%;height:14px"></div><div class="skel" style="width:60%;height:14px"></div></div>`).join('')}</div>`,
+    empty: () => `
+      ${FILTERS}
+      <div class="card empty">
+        <span class="big"><svg class="ico"><use href="#i-search"/></svg></span>
+        <h3>no encontré cursos con esos criterios</h3>
+        <p>Ningún curso de Educación Continuada cumple a la vez modalidad virtual, precio ≤ $500.000 y menos de 40 horas. No voy a sugerir opciones que no estén en las fuentes. Puedes ajustar un criterio:</p>
+        <div class="choices"><button class="choice">Quitar límite de precio</button><button class="choice">Permitir hasta 60 horas</button><button class="choice">Incluir modalidad presencial</button><button class="choice">Buscar en unidades de estudio</button></div>
+      </div>`,
+    error: () => `
+      <div class="card empty err" role="alert">
+        <span class="big"><svg class="ico"><use href="#i-wifi"/></svg></span>
+        <h3>no pude conectar con el servicio de búsqueda</h3>
+        <p>La API no respondió. Tu conversación se conserva en esta sesión; puedes reintentar en unos segundos. No muestro resultados sin consultar las fuentes.</p>
+        <div class="choices"><button class="btn btn-dark" data-retry><svg class="ico ico-sm"><use href="#i-refresh"/></svg>Reintentar</button><a class="btn btn-ghost" href="#fuentes">Ver estado de las fuentes</a></div>
+      </div>`
+  };
+  let state = 'normal';
+  function renderResults() {
+    const head = $('#ans-results .who').outerHTML;
+    $('#ans-results').innerHTML = head + VIEWS_RESULTS[state]();
+    updateTray();
+  }
+  function setState(s) {
+    state = s;
+    $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', b.dataset.state === s));
+    renderResults();
+    if (location.hash !== '#conversacion') location.hash = '#conversacion';
+    else setTimeout(() => { const r = $('#ans-results'); scroller().scrollTo({ top: r.getBoundingClientRect().top + scroller().scrollTop - 140, behavior: 'smooth' }); }, 30);
+  }
+
+  /* ---------------- Comparar ---------------- */
+  function updateTray() {
+    const n = $$('[data-cmp]:checked').length;
+    $('#tray').classList.toggle('on', n > 0);
+    $('#tray-t').textContent = n === 1 ? '1 opción seleccionada' : n + ' opciones seleccionadas';
+    $('#tray small').textContent = n < 2 ? 'Selecciona otra para comparar' : 'Listo para comparar';
+    $('#tray-go').disabled = n < 2;
+  }
+  const openModal = id => { const m = $(id); m.style.top = (document.body.classList.contains('mobile') && innerWidth > 700) ? stage.scrollTop + 'px' : ''; m.classList.add('on'); $(id + ' [data-close]').focus(); };
+  const closeModals = () => $$('.modal').forEach(m => m.classList.remove('on'));
+
+  /* ---------------- Navegación ---------------- */
+  const VIEWS = {
+    inicio: ['Inicio', 'inicio', 'inicio'],
+    conversacion: ['Conversación', 'conversación y resultados', 'conversacion'],
+    detalle: ['Detalle de formación', 'detalle de formación', 'conversacion'],
+    ruta: ['Mi ruta formativa', 'mi ruta formativa', 'ruta'],
+    fuentes: ['Fuentes de conocimiento', 'fuentes de conocimiento', 'fuentes']
+  };
+  function route() {
+    const k = (location.hash || '#inicio').slice(1);
+    const v = VIEWS[k] ? k : 'inicio';
+    $$('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+    $$('.nav [data-nav]').forEach(a => a.dataset.nav === VIEWS[v][2] ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+    $$('.mnav [data-nav]').forEach(a => a.dataset.nav === v ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+    $('#tk').textContent = VIEWS[v][0];
+    $('#tt').textContent = VIEWS[v][1];
+    document.title = VIEWS[v][1] + ' · Universidad EAN';
+    scroller().scrollTo(0, 0);
+  }
+  addEventListener('hashchange', route);
+
+  /* ---------------- Eventos ---------------- */
+  function goConv(q) {
+    if (q) $('#first-q').textContent = q;
+    location.hash = '#conversacion';
+    state = 'loading'; $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', b.dataset.state === 'loading')); renderResults();
+    setTimeout(() => { if (state === 'loading') setState('normal'); }, 1400);
+  }
+  $$('[data-composer]').forEach(f => {
+    const ta = $('textarea', f), send = $('.send', f);
+    const sync = () => { send.disabled = !ta.value.trim(); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 180) + 'px'; };
+    ta.addEventListener('input', sync);
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
+    f.addEventListener('submit', e => { e.preventDefault(); const q = ta.value.trim(); if (!q) return; ta.value = ''; sync(); goConv(f.closest('#v-inicio') ? q : null); });
+  });
+
+  document.addEventListener('click', e => {
+    const t = e.target;
+    const task = t.closest('.task');
+    if (task) { $$('.task', task.parentElement).forEach(b => b.setAttribute('aria-pressed', b === task)); return; }
+    const ch = t.closest('.choice');
+    if (ch && ch.closest('[role="group"]')) { $$('.choice', ch.parentElement).forEach(b => b.setAttribute('aria-pressed', b === ch)); return; }
+    if (ch && ch.closest('.empty')) { setState('normal'); return; }
+    const sug = t.closest('.sug');
+    if (sug && !sug.disabled) {
+      const g = sug.dataset.go;
+      if (g === 'conv') goConv(sug.dataset.q);
+      else if (g === 'ruta') location.hash = '#ruta';
+      else if (g === 'det') location.hash = '#detalle';
+      else if (g === 'cmp') { goConv(null); setTimeout(() => { $$('[data-cmp]').slice(0, 2).forEach(c => c.checked = true); updateTray(); }, 1500); }
+      return;
+    }
+    if (t.closest('[data-state]')) { setState(t.closest('[data-state]').dataset.state); return; }
+    const dv = t.closest('[data-device]');
+    if (dv) { const m = dv.dataset.device === 'mobile'; document.body.classList.toggle('mobile', m); $$('[data-device]').forEach(b => b.setAttribute('aria-pressed', b === dv)); route(); return; }
+    if (t.closest('[data-theme-toggle]')) { chosen = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; applyTheme(chosen); return; }
+    if (t.closest('#anno-btn')) { const on = document.body.classList.toggle('no-anno'); $('#anno-btn').setAttribute('aria-pressed', !on); return; }
+    if (t.closest('#map-btn')) { openModal('#m-map'); return; }
+    if (t.closest('#tray-go')) { openModal('#m-cmp'); return; }
+    if (t.closest('[data-retry]')) { goConv(null); return; }
+    if (t.closest('[data-addroute]')) { location.hash = '#ruta'; return; }
+    if (t.closest('[data-close]') || t.classList.contains('modal')) { closeModals(); return; }
+    const sw = t.closest('[data-switch] .tab');
+    if (sw) {
+      const g = sw.parentElement.dataset.switch;
+      $$('.tab', sw.parentElement).forEach(b => b.setAttribute('aria-selected', b === sw));
+      $$(`[data-pane^="${g}-"]`).forEach(p => p.hidden = p.dataset.pane !== g + '-' + sw.dataset.p);
+      return;
+    }
+    const sf = t.closest('[data-filter] .tab');
+    if (sf) { $$('.tab', sf.parentElement).forEach(b => b.setAttribute('aria-selected', b === sf)); renderSources(sf.dataset.f); return; }
+  });
+  document.addEventListener('change', e => { if (e.target.matches('[data-cmp]')) updateTray(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
+
+  renderSources(); renderResults(); route();
+})();
+</script>
+</body>
+</html>

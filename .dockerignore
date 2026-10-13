@@ -1,0 +1,16 @@
+**/.env
+**/.env.*
+!**/.env.example
+.git
+**/node_modules
+**/.venv
+**/venv
+**/__pycache__
+**/.pytest_cache
+**/*:Zone.Identifier*
+data
+backups
+secrets
+*.zip
+*.tar
+cerebro-academico-ean
