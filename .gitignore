@@ -43,3 +43,6 @@ deploy-artifacts/
 *:Zone.Identifier
 
 /data/raw/mercado_laboral/
+
+# Respaldos temporales de código
+*.py.bak_*
