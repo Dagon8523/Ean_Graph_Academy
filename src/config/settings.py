@@ -47,11 +47,11 @@ class Settings(BaseSettings):
 
     # SAP Datasphere
     sap_programs_auth_type: str = "oauth2_client_credentials"
-    sap_programs_entity_url: str
+    sap_programs_entity_url: str | None = None
 
-    sap_oauth_token_url: str
-    sap_oauth_client_id: str
-    sap_oauth_client_secret: SecretStr
+    sap_oauth_token_url: str | None = None
+    sap_oauth_client_id: str | None = None
+    sap_oauth_client_secret: SecretStr | None = None
     sap_oauth_scope: str | None = None
 
     sap_odata_page_size: int = Field(default=1000, ge=1, le=5000)
@@ -69,7 +69,7 @@ class Settings(BaseSettings):
             "SAP_OAUTH_TOKEN_URL": self.sap_oauth_token_url,
             "SAP_OAUTH_CLIENT_ID": self.sap_oauth_client_id,
             "SAP_OAUTH_CLIENT_SECRET": (
-                self.sap_oauth_client_secret.get_secret_value()
+                (self.sap_oauth_client_secret.get_secret_value() if self.sap_oauth_client_secret else None)
             ),
         }
 
@@ -95,7 +95,7 @@ class Settings(BaseSettings):
             "SAP_OAUTH_TOKEN_URL": (self.sap_oauth_token_url),
             "SAP_OAUTH_CLIENT_ID": (self.sap_oauth_client_id),
             "SAP_OAUTH_CLIENT_SECRET": (
-                self.sap_oauth_client_secret.get_secret_value()
+                (self.sap_oauth_client_secret.get_secret_value() if self.sap_oauth_client_secret else None)
             ),
         }
 
