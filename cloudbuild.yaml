@@ -36,8 +36,12 @@ steps:
       - us-central1-docker.pkg.dev/$PROJECT_ID/ruta-ean-docker/ruta-ean-web:${_IMAGE_TAG}
 
 substitutions:
-  _IMAGE_TAG: manual
+  _IMAGE_TAG: '${SHORT_SHA}'
 
 images:
   - us-central1-docker.pkg.dev/$PROJECT_ID/ruta-ean-docker/ruta-ean-api:${_IMAGE_TAG}
   - us-central1-docker.pkg.dev/$PROJECT_ID/ruta-ean-docker/ruta-ean-web:${_IMAGE_TAG}
+
+options:
+  dynamicSubstitutions: true
+  logging: CLOUD_LOGGING_ONLY
