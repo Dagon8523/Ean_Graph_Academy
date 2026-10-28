@@ -35,6 +35,21 @@ steps:
       - push
       - us-central1-docker.pkg.dev/$PROJECT_ID/ruta-ean-docker/ruta-ean-web:${_IMAGE_TAG}
 
+
+  - name: gcr.io/google.com/cloudsdktool/google-cloud-cli:stable
+    id: publish-release
+    waitFor:
+      - push-api
+      - push-web
+    entrypoint: bash
+    args:
+      - -e
+      - -c
+      - |
+        printf '%s\n' '${_IMAGE_TAG}' > /workspace/release.txt
+        gcloud storage cp /workspace/release.txt \
+          gs://ean-cerebro-academico-deploy/releases/commits/${_IMAGE_TAG}.txt
+
 substitutions:
   _IMAGE_TAG: '${SHORT_SHA}'
 
