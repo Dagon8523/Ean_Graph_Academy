@@ -14,6 +14,24 @@ server {
   add_header Referrer-Policy strict-origin-when-cross-origin always;
   add_header X-Frame-Options SAMEORIGIN always;
 
+  # Swagger UI público: /api/docs -> FastAPI /docs
+  location = /api/docs {
+    proxy_pass ${API_UPSTREAM}/docs;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $forwarded_scheme;
+    proxy_read_timeout 30s;
+  }
+
+  # Esquema OpenAPI utilizado por Swagger UI
+  location = /openapi.json {
+    proxy_pass ${API_UPSTREAM}/openapi.json;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $forwarded_scheme;
+    proxy_read_timeout 30s;
+  }
+
   # Proxy hacia FastAPI: conserva /api/... del backend
   # El frontend no recibe credenciales de las fuentes ni consulta el grafo directamente.
   location /api/ {
